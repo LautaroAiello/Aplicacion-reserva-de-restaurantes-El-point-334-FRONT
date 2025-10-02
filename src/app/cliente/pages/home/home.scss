@@ -1,0 +1,22 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  column-gap: 16px;
+  row-gap: 32px;
+}
+
+.row {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+}
+
+.row>app-simple-card {
+  min-width: 220px;
+}
