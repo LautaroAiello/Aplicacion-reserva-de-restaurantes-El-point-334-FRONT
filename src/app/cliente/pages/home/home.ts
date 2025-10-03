@@ -14,19 +14,16 @@ export class ClienteHomePage {
       id: 1,
       imgUrl: 'https://picsum.photos/200/300',
       title: 'Card 1',
-      subtitle: 'Subtitle 1',
     },
     {
       id: 2,
       imgUrl: 'https://picsum.photos/200/300',
       title: 'Card 2',
-      subtitle: 'Subtitle 2',
     },
     {
       id: 3,
       imgUrl: 'https://picsum.photos/200/300',
       title: 'Card 3',
-      subtitle: 'Subtitle 3',
     },
   ];
 

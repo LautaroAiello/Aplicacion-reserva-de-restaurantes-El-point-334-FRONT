@@ -2,7 +2,7 @@
   <h2>Populares</h2>
   <div class="grid">
     @for (item of mockCards; track $index) {
-    <app-simple-card [title]="item.title" [subtitle]="item.subtitle" [imgUrl]="item.imgUrl" [id]="item.id"
+    <app-simple-card [title]="item.title" [imgUrl]="item.imgUrl" [id]="item.id"
       (cardClicked)="cardClicked($event)"></app-simple-card>
     }
   </div>
@@ -12,7 +12,7 @@
   <h2>Reservar de nuevo</h2>
   <div class="row">
     @for (item of mockCards; track $index) {
-    <app-simple-card [title]="item.title" [subtitle]="item.subtitle" [imgUrl]="item.imgUrl" [id]="item.id"
+    <app-simple-card [title]="item.title" [imgUrl]="item.imgUrl" [id]="item.id"
       (cardClicked)="cardClicked($event)"></app-simple-card>
     }
   </div>
@@ -22,7 +22,7 @@
   <h2>Mejores puntuados</h2>
   <div class="grid">
     @for (item of mockCards; track $index) {
-    <app-simple-card [title]="item.title" [subtitle]="item.subtitle" [imgUrl]="item.imgUrl" [id]="item.id"
+    <app-simple-card [title]="item.title" [imgUrl]="item.imgUrl" [id]="item.id"
       (cardClicked)="cardClicked($event)"></app-simple-card>
     }
   </div>
