@@ -10,12 +10,12 @@ import { MatChipsModule } from '@angular/material/chips';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RestauranteCard {
-  protected nombreRestaurante: InputSignal<string> = input.required();
-  protected imagenRestaurante: InputSignal<string> = input.required();
-  protected etiquetas: InputSignal<string[]> = input<string[]>([]);
-  protected calificacion: InputSignal<number> = input.required();
-  protected direccion: InputSignal<string> = input.required();
-  protected distancia: InputSignal<string> = input.required();
+   nombreRestaurante: InputSignal<string> = input.required();
+   imagenRestaurante: InputSignal<string> = input.required();
+   etiquetas: InputSignal<string[]> = input<string[]>([]);
+   calificacion: InputSignal<number> = input.required();
+   direccion: InputSignal<string> = input.required();
+   distancia: InputSignal<string> = input.required();
 
   constructor() {
 
