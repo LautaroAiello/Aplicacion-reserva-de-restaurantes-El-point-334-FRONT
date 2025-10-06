@@ -1,1 +1,29 @@
-<p>home-page works!</p>
+<section>
+  <h2>Populares</h2>
+  <div class="grid">
+    @for (item of mockCards; track $index) {
+    <app-simple-card [title]="item.title" [imgUrl]="item.imgUrl" [id]="item.id"
+      (cardClicked)="cardClicked($event)"></app-simple-card>
+    }
+  </div>
+</section>
+
+<section>
+  <h2>Reservar de nuevo</h2>
+  <div class="row">
+    @for (item of mockCards; track $index) {
+    <app-simple-card [title]="item.title" [imgUrl]="item.imgUrl" [id]="item.id"
+      (cardClicked)="cardClicked($event)"></app-simple-card>
+    }
+  </div>
+</section>
+
+<section>
+  <h2>Mejores puntuados</h2>
+  <div class="grid">
+    @for (item of mockCards; track $index) {
+    <app-simple-card [title]="item.title" [imgUrl]="item.imgUrl" [id]="item.id"
+      (cardClicked)="cardClicked($event)"></app-simple-card>
+    }
+  </div>
+</section>
