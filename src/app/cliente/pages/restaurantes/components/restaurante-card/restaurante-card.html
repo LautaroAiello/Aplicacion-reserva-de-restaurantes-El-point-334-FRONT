@@ -1,0 +1,29 @@
+<button>
+
+    <img src="{{ imagenRestaurante }} " alt="{{ nombreRestaurante }} ">
+
+    <div class="info-conteiner">
+        <h3>{{ nombreRestaurante }}</h3>
+        <div class="calificacion-conteiner">
+            <span class="material-icons">star</span>
+            <span style="color: grey;">{{ calificacion }}</span>
+        </div>
+    </div>
+    <div class="info-conteiner">
+        <p style="color: grey;">{{ direccion }}</p>
+        <div class="lugares-disponibles">
+            <div class="star-container">
+                <mat-icon>star</mat-icon>
+            </div>
+            <span>Lugares disponibles</span>
+        </div>
+    </div>
+    <div>
+        <mat-chip-set aria-label="Fish selection" style="display: flex;">
+            @for (etiquetas of arrayEtiquetas; track $index) {
+            <mat-chip style="background-color: #EA690E; border: none;padding: 0;height: 25px;font-size: 12px;">{{ etiquetas
+                }}</mat-chip>
+            }
+        </mat-chip-set>
+    </div>
+</button>

@@ -1,0 +1,57 @@
+button {
+    border: none;
+    background-color:
+        transparent;
+    width: 100%;
+}
+img {
+    width: 100%;
+    aspect-ratio: 30/10;
+    height: auto;
+    object-fit: cover;
+    border-radius: 12px;
+}
+.info-conteiner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.calificacion-conteiner {
+    display: flex;
+    align-items: center;
+    justify-content: right;
+}
+.lugares-disponibles {
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    column-gap: 7px;
+}
+.restaurante-card {
+    background-color: aliceblue;
+}
+.material-icons {
+    color: #FEBD03;
+}
+.star-container {
+    width: 21px;
+    height: 21px;
+    border-radius: 50%;
+    border: 2px solid #49454F;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    cursor: pointer;
+}
+.star-container mat-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #49454F;
+    text-align: center;
+    transform: scale(0.7);
+}
+.mat-mdc-standard-chip {
+    --mat-chip-label-text-color: #ffffff;
+}
