@@ -18,12 +18,13 @@
             <span>Lugares disponibles</span>
         </div>
     </div>
-    <div>
-        <mat-chip-set aria-label="Fish selection" style="display: flex;">
-            @for (etiquetas of etiquetas(); track $index) {
-            <mat-chip style="background-color: #EA690E; border: none;padding: 0;height: 25px;font-size: 12px;">{{ etiquetas
-                }}</mat-chip>
-            }
-        </mat-chip-set>
-    </div>
+
+    <mat-chip-set style="display: flex;">
+        @for (etiquetas of etiquetas(); track $index) {
+        <mat-chip class="mat-chip">{{
+            etiquetas
+            }}</mat-chip>
+        }
+    </mat-chip-set>
+
 </button>

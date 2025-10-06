@@ -4,6 +4,7 @@ button {
         transparent;
     width: 100%;
 }
+
 img {
     width: 100%;
     aspect-ratio: 30/10;
@@ -11,28 +12,34 @@ img {
     object-fit: cover;
     border-radius: 12px;
 }
+
 .info-conteiner {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
+
 .calificacion-conteiner {
     display: flex;
     align-items: center;
     justify-content: right;
 }
+
 .lugares-disponibles {
     display: flex;
     justify-content: right;
     align-items: center;
     column-gap: 7px;
 }
+
 .restaurante-card {
     background-color: aliceblue;
 }
+
 .material-icons {
     color: #FEBD03;
 }
+
 .star-container {
     width: 21px;
     height: 21px;
@@ -44,6 +51,7 @@ img {
     background-color: white;
     cursor: pointer;
 }
+
 .star-container mat-icon {
     display: flex;
     justify-content: center;
@@ -52,6 +60,15 @@ img {
     text-align: center;
     transform: scale(0.7);
 }
+
+.mat-chip {
+    background-color: #EA690E;
+    border: none;
+    padding: 0;
+    height: 25px;
+    font-size: 12px;
+}
+
 .mat-mdc-standard-chip {
     --mat-chip-label-text-color: #ffffff;
 }
