@@ -1,0 +1,40 @@
+// src/app/administrador/pages/register/register.page.scss
+.admin-register-container {
+  padding: 40px 16px;
+  max-width: 600px;
+  margin: 20px auto;
+  background-color: #f9f9f9;
+}
+
+mat-card-content form {
+  display: flex;
+  flex-direction: column;
+}
+
+mat-form-field {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.form-row {
+  display: flex;
+  gap: 10px;
+
+  mat-form-field {
+    flex: 1;
+  }
+}
+
+// Estilos para los botones del stepper
+mat-step > div {
+  margin-top: 16px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.error-message {
+  color: red;
+  font-size: 14px;
+  margin: 10px 0;
+}

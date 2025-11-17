@@ -1,0 +1,34 @@
+@if (reserva(); as res) {
+<mat-card class="reserva-card">
+  <img
+    mat-card-image
+    [src]="res.restauranteImagenUrl"
+    [alt]="res.restauranteNombre"
+  />
+
+  <mat-card-header>
+    <mat-card-title>{{ res.restauranteNombre }}</mat-card-title>
+    <mat-card-subtitle [ngClass]="res.estado.toLowerCase()">
+      {{ res.estado }}
+    </mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div class="info-row">
+      <mat-icon>event</mat-icon>
+      <span>{{ res.fechaHora | date:'EEEE, d \'de\' MMMM \'de\' y' }}</span>
+    </div>
+    <div class="info-row">
+      <mat-icon>access_time</mat-icon>
+      <span>{{ res.fechaHora | date:'HH:mm' }} hs</span>
+    </div>
+    <div class="info-row">
+      <mat-icon>people</mat-icon>
+      <span
+        >{{ res.cantidadPersonas }} {{ res.cantidadPersonas === 1 ? 'persona' :
+        'personas' }}</span
+      >
+    </div>
+  </mat-card-content>
+</mat-card>
+}

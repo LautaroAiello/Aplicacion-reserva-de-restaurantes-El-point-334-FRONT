@@ -1,1 +1,54 @@
-<p>login-page works!</p>
+<div class="login-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Iniciar Sesión</mat-card-title>
+      <mat-card-subtitle>Accede a tu cuenta de reservas</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input
+            matInput
+            formControlName="email"
+            type="email"
+            placeholder="tu@email.com"
+          />
+          @if (loginForm.get('email')?.touched &&
+          loginForm.get('email')?.hasError('required')) {
+          <mat-error>El email es requerido.</mat-error>
+          } @if (loginForm.get('email')?.hasError('email')) {
+          <mat-error>Formato de email inválido.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Contraseña</mat-label>
+          <input matInput formControlName="password" type="password" /> @if
+          (loginForm.get('password')?.touched &&
+          loginForm.get('password')?.hasError('required')) {
+          <mat-error>La contraseña es requerida.</mat-error>
+          }
+        </mat-form-field>
+
+        @if (errorMessage) {
+        <div class="error-message">{{ errorMessage }}</div>
+        }
+
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          [disabled]="loginForm.invalid"
+        >
+          Ingresar
+        </button>
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <p>¿No tenés cuenta? <a routerLink="/register">Registrate acá</a></p>
+    </mat-card-actions>
+  </mat-card>
+</div>

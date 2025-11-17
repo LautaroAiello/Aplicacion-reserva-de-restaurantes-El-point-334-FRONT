@@ -1,0 +1,59 @@
+:host {
+  display: block;
+  padding: 16px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+}
+
+.reserva-form,
+.mesas-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form-row {
+  display: flex;
+  gap: 10px;
+
+  mat-form-field {
+    flex: 1; // Ocupan el mismo espacio
+  }
+}
+
+button[mat-flat-button] {
+  padding: 12px 0;
+}
+
+/* Estilos para los contenedores de estado */
+.estado-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  min-height: 200px;
+  text-align: center;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+  }
+
+  &.error {
+    color: #f44336; // Rojo de Material
+  }
+
+  &.confirmada {
+    color: #4caf50; // Verde de Material
+  }
+}
+
+/* Estilos para la lista de mesas */
+.mesas-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 10px 0;
+}

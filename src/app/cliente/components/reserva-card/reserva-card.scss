@@ -1,0 +1,36 @@
+.reserva-card {
+  margin-bottom: 20px;
+}
+
+mat-card-header {
+  display: flex;
+  justify-content: space-between;
+
+  mat-card-subtitle {
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 4px;
+
+    // Colores según el estado
+    &.confirmada {
+      color: #1a6e1e;
+      background-color: #d1f0d3;
+    }
+    &.cancelada {
+      color: #b71c1c;
+      background-color: #ffcdd2;
+    }
+  }
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  color: #333;
+
+  mat-icon {
+    color: #666;
+  }
+}

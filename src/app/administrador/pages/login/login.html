@@ -1,1 +1,49 @@
-<p>login-page works!</p>
+<div class="login-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Portal de Administrador</mat-card-title>
+      <mat-card-subtitle
+        >Accede a la gestión de tu restaurante</mat-card-subtitle
+      >
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input
+            matInput
+            formControlName="email"
+            type="email"
+            placeholder="tu@email.com"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Contraseña</mat-label>
+          <input matInput formControlName="password" type="password" />
+        </mat-form-field>
+
+        @if (errorMessage()) {
+        <div class="error-message">{{ errorMessage() }}</div>
+        }
+
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          [disabled]="loginForm.invalid"
+        >
+          Ingresar
+        </button>
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <p>
+        ¿No tenés restaurante?
+        <a routerLink="/admin/register">Registralo acá</a>
+      </p>
+    </mat-card-actions>
+  </mat-card>
+</div>

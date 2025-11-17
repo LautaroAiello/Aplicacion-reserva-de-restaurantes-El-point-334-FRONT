@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 import { ClienteLayout } from './cliente/layout/cliente/cliente';
+import { authGuard } from './core/guards/auth-guard';
+import { adminGuard } from './core/guards/admin-guard';
 
 export const routes: Routes = [
   {
@@ -11,6 +13,7 @@ export const routes: Routes = [
         data: { titulo: 'Bievenido', headerMobileDisponible: true },
         loadComponent: () =>
           import('./cliente/pages/home/home').then((c) => c.ClienteHomePage),
+        canActivate: [authGuard],
       },
       {
         path: 'restaurantes',
@@ -35,6 +38,7 @@ export const routes: Routes = [
           import('./cliente/pages/reservas/reservas').then(
             (c) => c.ClienteReservasPage
           ),
+        canActivate: [authGuard],
       },
       {
         path: 'favoritos',
@@ -43,6 +47,7 @@ export const routes: Routes = [
           import('./cliente/pages/favoritos/favoritos').then(
             (c) => c.ClienteFavoritosPage
           ),
+        canActivate: [authGuard],
       },
       {
         path: 'perfil',
@@ -51,12 +56,14 @@ export const routes: Routes = [
           import('./cliente/pages/perfil/perfil').then(
             (c) => c.ClientePerfilPage
           ),
+        canActivate: [authGuard],
       },
       { path: '', redirectTo: 'home', pathMatch: 'full' },
     ],
   },
   {
     path: 'admin',
+    canActivate: [adminGuard],
     loadChildren: () =>
       import('./administrador/admin.routes').then((r) => r.adminRoutes),
   },

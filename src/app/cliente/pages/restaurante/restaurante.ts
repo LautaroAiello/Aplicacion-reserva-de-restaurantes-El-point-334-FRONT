@@ -1,10 +1,49 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnInit,
+} from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { Observable, switchMap } from 'rxjs';
+import {
+  RestauranteDTO,
+  RestauranteService,
+} from '../../../core/services/restaurante.service';
+import { FormularioReserva } from '../../components/formulario-reserva/formulario-reserva';
+
+// Importa los módulos de Material
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-cliente-restaurante-page',
-  imports: [],
+  standalone: true, // <-- Es standalone
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatIconModule,
+    MatButtonModule,
+    FormularioReserva,
+  ],
   templateUrl: './restaurante.html',
   styleUrl: './restaurante.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ClienteRestaurantePage {}
+export class ClienteRestaurantePage implements OnInit {
+  private route = inject(ActivatedRoute);
+  private restauranteService = inject(RestauranteService);
+
+  public restaurante$!: Observable<RestauranteDTO>;
+
+  ngOnInit() {
+    this.restaurante$ = this.route.params.pipe(
+      switchMap((params) => {
+        const id = params['id'];
+        return this.restauranteService.getRestaurantePorId(id);
+      })
+    );
+  }
+}

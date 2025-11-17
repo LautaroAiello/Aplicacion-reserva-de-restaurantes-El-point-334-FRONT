@@ -1,0 +1,103 @@
+<div class="gestion-container">
+  <h1>Gestión de Mesas</h1>
+
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title>Añadir Nueva Mesa</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="mesaForm" (ngSubmit)="onCrearMesa()">
+        <mat-form-field appearance="outline">
+          <mat-label>Descripción (Ej: "Mesa 1", "Ventana Izq.")</mat-label>
+          <input matInput formControlName="descripcion" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Capacidad (personas)</mat-label>
+          <input matInput formControlName="capacidad" type="number" min="1" />
+        </mat-form-field>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Posición X</mat-label>
+            <input matInput formControlName="posicionX" type="number" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Posición Y</mat-label>
+            <input matInput formControlName="posicionY" type="number" />
+          </mat-form-field>
+        </div>
+
+        <mat-slide-toggle formControlName="bloqueada" color="warn">
+          Bloqueada (no disponible para reservas)
+        </mat-slide-toggle>
+
+        @if (errorMessage()) {
+        <div class="error-message">{{ errorMessage() }}</div>
+        }
+
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          [disabled]="mesaForm.invalid"
+        >
+          Crear Mesa
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="tabla-card">
+    <mat-card-header>
+      <mat-card-title>Mesas Actuales</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      @if (cargando()) {
+      <div class="spinner-container">
+        <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+      </div>
+      } @if (!cargando() && listaMesas().length > 0) {
+      <table mat-table [dataSource]="listaMesas()">
+        <ng-container matColumnDef="descripcion">
+          <th mat-header-cell *matHeaderCellDef>Descripción</th>
+          <td mat-cell *matCellDef="let mesa">{{mesa.descripcion}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="capacidad">
+          <th mat-header-cell *matHeaderCellDef>Capacidad</th>
+          <td mat-cell *matCellDef="let mesa">{{mesa.capacidad}} personas</td>
+        </ng-container>
+
+        <ng-container matColumnDef="bloqueada">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let mesa">
+            @if (mesa.bloqueada) {
+            <span class="estado-bloqueada">Bloqueada</span>
+            } @else {
+            <span class="estado-activa">Activa</span>
+            }
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let mesa">
+            <button mat-icon-button color="primary">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+      } @if (!cargando() && listaMesas().length === 0) {
+      <p class="no-mesas">Aún no has añadido ninguna mesa.</p>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

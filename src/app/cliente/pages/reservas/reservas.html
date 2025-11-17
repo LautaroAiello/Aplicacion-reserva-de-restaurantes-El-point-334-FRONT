@@ -1,1 +1,16 @@
-<p>reservas-page works!</p>
+<div class="reservas-container">
+  @if (misReservas$ | async; as reservas) { @if (reservas.length > 0) { @for
+  (res of reservas; track res.id) {
+  <app-reserva-card [reserva]="res"></app-reserva-card>
+  } } @else {
+  <div class="estado-vacio">
+    <h3>Todavía no tenés reservas</h3>
+    <p>¡Buscá tu próximo restaurante y reservá tu lugar!</p>
+  </div>
+  } } @else {
+  <div class="estado-cargando">
+    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+    <p>Cargando tus reservas...</p>
+  </div>
+  }
+</div>

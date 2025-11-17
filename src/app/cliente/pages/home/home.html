@@ -1,6 +1,63 @@
 <section>
   <h2>Populares</h2>
   <div class="grid">
+    @if (populares$ | async; as populares) { @for (item of populares; track
+    item.id) {
+    <app-simple-card
+      [title]="item.nombre"
+      [imgUrl]="'https://picsum.photos/seed/' + item.id + '/200/200'"
+      [id]="+item.id"
+      [subtitle]="item.direccion.calle + ', ' + item.direccion.ciudad"
+      (cardClicked)="cardClicked($event)"
+    >
+    </app-simple-card>
+    } } @else {
+    <p>Cargando...</p>
+    }
+  </div>
+</section>
+
+<section>
+  <h2>Reservar de nuevo</h2>
+  <div class="row">
+    @if (reservarNuevo$ | async; as restaurantes) { @for (item of restaurantes;
+    track item.id) {
+    <app-simple-card
+      [title]="item.nombre"
+      [imgUrl]="'https://picsum.photos/seed/' + item.id + '/300/200'"
+      [id]="+item.id"
+      [subtitle]="item.direccion.calle + ', ' + item.direccion.ciudad"
+      (cardClicked)="cardClicked($event)"
+    >
+    </app-simple-card>
+    } } @else {
+    <p>Cargando...</p>
+    }
+  </div>
+</section>
+
+<section>
+  <h2>Mejores puntuados</h2>
+  <div class="grid">
+    @if (mejoresPuntuados$ | async; as puntuados) { @for (item of puntuados;
+    track item.id) {
+    <app-simple-card
+      [title]="item.nombre"
+      [imgUrl]="'https://picsum.photos/seed/' + item.id + '/200/200'"
+      [id]="+item.id"
+      [subtitle]="item.direccion.calle + ', ' + item.direccion.ciudad"
+      (cardClicked)="cardClicked($event)"
+    >
+    </app-simple-card>
+    } } @else {
+    <p>Cargando...</p>
+    }
+  </div>
+</section>
+
+<!-- <section>
+  <h2>Populares</h2>
+  <div class="grid">
     @for (item of mockCards; track $index) {
     <app-simple-card [title]="item.title" [imgUrl]="item.imgUrl" [id]="item.id"
       (cardClicked)="cardClicked($event)"></app-simple-card>
@@ -17,13 +74,4 @@
     }
   </div>
 </section>
-
-<section>
-  <h2>Mejores puntuados</h2>
-  <div class="grid">
-    @for (item of mockCards; track $index) {
-    <app-simple-card [title]="item.title" [imgUrl]="item.imgUrl" [id]="item.id"
-      (cardClicked)="cardClicked($event)"></app-simple-card>
-    }
-  </div>
-</section>
+ -->

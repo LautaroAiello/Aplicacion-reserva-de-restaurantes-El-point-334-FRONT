@@ -1,1 +1,140 @@
-<p>register-page works!</p>
+<div class="admin-register-container">
+  <mat-card>
+    <mat-card-title>Registra tu Restaurante</mat-card-title>
+    <mat-card-content>
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <mat-vertical-stepper [linear]="true" #stepper>
+          <mat-step label="Datos del Restaurante" [stepControl]="registerForm">
+            <mat-form-field appearance="outline">
+              <mat-label>Nombre del Restaurante</mat-label>
+              <input matInput formControlName="nombre" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Teléfono (Restaurante)</mat-label>
+              <input matInput formControlName="telefono" type="tel" />
+            </mat-form-field>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Horario Apertura</mat-label>
+                <input
+                  matInput
+                  formControlName="horarioApertura"
+                  type="time"
+                  placeholder="HH:mm:ss"
+                />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Horario Cierre</mat-label>
+                <input
+                  matInput
+                  formControlName="horarioCierre"
+                  type="time"
+                  placeholder="HH:mm:ss"
+                />
+              </mat-form-field>
+            </div>
+
+            <div>
+              <button mat-button matStepperNext type="button">Siguiente</button>
+            </div>
+          </mat-step>
+
+          <mat-step label="Dirección" formGroupName="direccion">
+            <mat-form-field appearance="outline">
+              <mat-label>Calle</mat-label>
+              <input matInput formControlName="calle" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Número</mat-label>
+              <input matInput formControlName="numero" />
+            </mat-form-field>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Ciudad</mat-label>
+                <input matInput formControlName="ciudad" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Provincia</mat-label>
+                <input matInput formControlName="provincia" />
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline">
+              <mat-label>País</mat-label>
+              <input matInput formControlName="pais" />
+            </mat-form-field>
+
+            <div>
+              <button mat-button matStepperPrevious type="button">
+                Volver
+              </button>
+              <button mat-button matStepperNext type="button">Siguiente</button>
+            </div>
+          </mat-step>
+
+          <mat-step
+            label="Datos del Administrador"
+            [stepControl]="registerForm"
+          >
+            <mat-form-field appearance="outline">
+              <mat-label>Tu Nombre</mat-label>
+              <input matInput formControlName="nombreUsuario" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Tu Apellido</mat-label>
+              <input matInput formControlName="apellidoUsuario" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Tu Email (será tu usuario)</mat-label>
+              <input matInput formControlName="emailUsuario" type="email" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Contraseña (mín. 8 caracteres)</mat-label>
+              <input
+                matInput
+                formControlName="passwordUsuario"
+                type="password"
+              />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Tu Teléfono</mat-label>
+              <input matInput formControlName="telefonoUsuario" type="tel" />
+            </mat-form-field>
+
+            <div>
+              <button mat-button matStepperPrevious type="button">
+                Volver
+              </button>
+              <button mat-button matStepperNext type="button">Siguiente</button>
+            </div>
+          </mat-step>
+
+          <mat-step label="Confirmar">
+            <p>
+              ¡Todo listo! Revisa los datos y haz clic en "Finalizar Registro".
+            </p>
+            @if (errorMessage()) {
+            <div class="error-message">{{ errorMessage() }}</div>
+            }
+            <div>
+              <button mat-button matStepperPrevious type="button">
+                Volver
+              </button>
+              <button
+                mat-flat-button
+                color="primary"
+                type="submit"
+                [disabled]="registerForm.invalid"
+              >
+                Finalizar Registro
+              </button>
+            </div>
+          </mat-step>
+        </mat-vertical-stepper>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

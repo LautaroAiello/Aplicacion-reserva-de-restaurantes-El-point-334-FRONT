@@ -1,0 +1,47 @@
+.perfil-container {
+  padding: 20px 16px;
+}
+
+mat-card-avatar {
+  // Hacemos el ícono de avatar más grande
+  font-size: 60px;
+  width: 60px;
+  height: 60px;
+  color: #666;
+}
+
+mat-card-header {
+  padding-bottom: 20px;
+}
+
+mat-card-actions {
+  padding: 16px;
+  display: flex;
+
+  button {
+    width: 100%; // Botón ocupa todo el ancho
+    padding: 10px 0;
+  }
+}
+
+// Estilos para los items de la lista
+[matListItemTitle] {
+  font-weight: 500;
+  color: #333;
+}
+[matListItemLine] {
+  font-size: 14px;
+  color: #555;
+}
+[matListItemIcon] {
+  color: #777;
+}
+.spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 100px;
+  gap: 16px;
+  color: #666;
+}

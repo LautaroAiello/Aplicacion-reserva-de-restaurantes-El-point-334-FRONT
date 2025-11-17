@@ -1,1 +1,45 @@
-<p>restaurante-page works!</p>
+@if (restaurante$ | async; as restaurante) {
+
+<div class="detalle-container">
+  <img
+    [src]="'https://picsum.photos/seed/' + restaurante.id + '/600/300'"
+    [alt]="restaurante.nombre"
+    class="header-image"
+  />
+
+  <div class="info-content">
+    <h1>{{ restaurante.nombre }}</h1>
+
+    <div class="info-row">
+      <mat-icon>location_on</mat-icon>
+      <span>
+        {{ restaurante.direccion.calle }} {{ restaurante.direccion.numero }}, {{
+        restaurante.direccion.ciudad }}
+      </span>
+    </div>
+
+    <div class="info-row">
+      <mat-icon>phone</mat-icon>
+      <span>{{ restaurante.telefono }}</span>
+    </div>
+    <div class="info-row">
+      <mat-icon>access_time</mat-icon>
+      <span
+        >{{ restaurante.horarioApertura }} - {{ restaurante.horarioCierre
+        }}</span
+      >
+    </div>
+
+    <hr />
+
+    <h2>Hacer una reserva</h2>
+
+    <app-formulario-reserva
+      [restauranteId]="restaurante.id"
+    ></app-formulario-reserva>
+  </div>
+</div>
+
+} @else {
+<p>Cargando datos del restaurante...</p>
+}

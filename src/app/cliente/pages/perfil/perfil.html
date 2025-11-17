@@ -1,1 +1,51 @@
-<p>perfil-page works!</p>
+<div class="perfil-container">
+  @if (cargando()) {
+  <div class="spinner-container">
+    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+    <p>Cargando perfil...</p>
+  </div>
+  } @if (!cargando() && usuario(); as user) {
+  <mat-card>
+    <mat-card-header>
+      <mat-icon mat-card-avatar>account_circle</mat-icon>
+      <mat-card-title>{{ user.nombre }}</mat-card-title>
+      <mat-card-subtitle>{{ user.email }}</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <mat-list role="list">
+        <h3 mat-subheader>Información de la Cuenta</h3>
+
+        <mat-list-item role="listitem">
+          <mat-icon matListItemIcon>person</mat-icon>
+          <div matListItemTitle>Nombre</div>
+          <div matListItemLine>{{ user.nombre }} {{ user.apellido }}</div>
+        </mat-list-item>
+
+        <mat-list-item role="listitem">
+          <mat-icon matListItemIcon>email</mat-icon>
+          <div matListItemTitle>Email</div>
+          <div matListItemLine>{{ user.email }}</div>
+        </mat-list-item>
+
+        <mat-list-item role="listitem">
+          <mat-icon matListItemIcon>phone</mat-icon>
+          <div matListItemTitle>Teléfono</div>
+          <div matListItemLine>{{ user.telefono }}</div>
+        </mat-list-item>
+      </mat-list>
+    </mat-card-content>
+
+    <mat-divider></mat-divider>
+
+    <mat-card-actions>
+      <button mat-flat-button color="warn" (click)="cerrarSesion()">
+        <mat-icon>logout</mat-icon>
+        Cerrar Sesión
+      </button>
+    </mat-card-actions>
+  </mat-card>
+  } @if (!cargando() && !usuario()) {
+  <p>Error al cargar el perfil. Por favor, intente iniciar sesión de nuevo.</p>
+  }
+</div>

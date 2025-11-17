@@ -1,8 +1,17 @@
 <app-buscador-con-filtro></app-buscador-con-filtro>
-<div style="width: 100%; max-width: 500px;">
-    @for (item of restaurantesMock; track $index) {
-    <app-restaurante-card [direccion]="item.direccion" [calificacion]="item.calificacion" [distancia]="item.distancia"
-        [etiquetas]="item.etiquetas" [imagenRestaurante]="item.imagenRestaurante"
-        [nombreRestaurante]="item.nombreRestaurante"></app-restaurante-card>
-    }
+
+<div class="lista-restaurantes">
+  @if (restaurantes$ | async; as restaurantes) { @for (item of restaurantes;
+  track item.id) {
+  <app-restaurante-card
+    [id]="item.id"
+    [nombreRestaurante]="item.nombre"
+    [direccion]="item.direccion"
+    [horarioApertura]="item.horarioApertura"
+    [horarioCierre]="item.horarioCierre"
+  >
+  </app-restaurante-card>
+  } } @else {
+  <p>Cargando restaurantes...</p>
+  }
 </div>

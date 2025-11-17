@@ -1,0 +1,61 @@
+// (Usamos los mismos estilos que 'gestion-mesas')
+.gestion-container {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+@media (min-width: 960px) {
+  .gestion-container {
+    flex-direction: row;
+    align-items: flex-start;
+    .form-card {
+      flex: 1 1 350px;
+      position: sticky;
+      top: 24px;
+    }
+    .tabla-card {
+      flex: 2 1 60%;
+    }
+  }
+}
+
+mat-card-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.form-row {
+  display: flex;
+  gap: 12px;
+  mat-form-field {
+    flex: 1;
+  }
+}
+button[mat-flat-button] {
+  padding: 10px 0;
+}
+table {
+  width: 100%;
+}
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
+}
+.no-items {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+
+// Estados de platos
+td span.disponible {
+  color: #4caf50;
+  font-weight: 500;
+}
+td span.agotado {
+  color: #f44336;
+  font-weight: 500;
+}

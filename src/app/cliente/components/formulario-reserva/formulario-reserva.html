@@ -1,0 +1,67 @@
+@if (estado() === 'loading') {
+<div class="estado-container">
+  <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+  <p>Procesando...</p>
+</div>
+} @if (estado() === 'error' && errorMessage()) {
+<div class="estado-container error">
+  <mat-icon>warning</mat-icon>
+  <p>{{ errorMessage() }}</p>
+  <button mat-stroked-button (click)="resetForm()">Intentar de nuevo</button>
+</div>
+} @if (estado() === 'confirmada') {
+<div class="estado-container confirmada">
+  <mat-icon>check_circle</mat-icon>
+  <h2>¡Reserva Confirmada!</h2>
+  <p>Recibirás un email con los detalles.</p>
+</div>
+} @if (estado() === 'idle') {
+<form [formGroup]="reservaForm" class="reserva-form">
+  <mat-form-field appearance="outline">
+    <mat-label>Fecha</mat-label>
+    <input matInput [matDatepicker]="picker" formControlName="fecha" />
+    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+
+  <div class="form-row">
+    <mat-form-field appearance="outline">
+      <mat-label>Hora</mat-label>
+      <mat-select formControlName="hora">
+        @for (hora of horariosDisponibles; track hora) {
+        <mat-option [value]="hora">{{ hora }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Personas</mat-label>
+      <mat-select formControlName="cantidadPersonas">
+        @for (p of personas; track p) {
+        <mat-option [value]="p"
+          >{{ p }} {{ p === 1 ? 'persona' : 'personas' }}</mat-option
+        >
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <button mat-flat-button color="primary" (click)="onConsultar()">
+    Consultar Disponibilidad
+  </button>
+</form>
+} @if (estado() === 'disponible') {
+<div class="estado-container">
+  <h4>¡Hay lugar!</h4>
+  <p>
+    Hay disponibilidad para {{ reservaForm.value.cantidadPersonas }} personas el
+    {{ reservaForm.value.fecha | date:'d/M' }} a las {{ reservaForm.value.hora
+    }} hs.
+  </p>
+
+  <button mat-flat-button color="primary" (click)="onConfirmarReserva()">
+    Confirmar Reserva
+  </button>
+  <button mat-button (click)="resetForm()">Cambiar Fecha/Hora</button>
+</div>
+}

@@ -1,0 +1,66 @@
+.gestion-container {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+// Layout de 2 columnas en desktop
+@media (min-width: 960px) {
+  .gestion-container {
+    flex-direction: row;
+    align-items: flex-start;
+
+    .form-card {
+      flex: 1 1 350px; // Crece pero tiene base de 350px
+      position: sticky; // Se queda fija al hacer scroll
+      top: 24px;
+    }
+    .tabla-card {
+      flex: 2 1 60%; // Ocupa el resto del espacio
+    }
+  }
+}
+
+// Estilos del formulario
+mat-card-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.form-row {
+  display: flex;
+  gap: 12px;
+  mat-form-field {
+    flex: 1;
+  }
+}
+mat-slide-toggle {
+  margin: 10px 0;
+}
+button[mat-flat-button] {
+  padding: 10px 0;
+}
+
+// Estilos de la tabla
+table {
+  width: 100%;
+}
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
+}
+.no-mesas {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+.estado-bloqueada {
+  color: #f44336;
+  font-weight: 500;
+}
+.estado-activa {
+  color: #4caf50;
+  font-weight: 500;
+}
