@@ -9,7 +9,7 @@ import { ChangeDetectionStrategy, Component, input, InputSignal, output } from '
 })
 export class SimpleCard {
   public id: InputSignal<number> = input.required();
-  public imgUrl: InputSignal<string> = input.required();
+  public src: InputSignal<string> = input.required();
   public title: InputSignal<string> = input.required();
   public subtitle: InputSignal<string> = input('');
 

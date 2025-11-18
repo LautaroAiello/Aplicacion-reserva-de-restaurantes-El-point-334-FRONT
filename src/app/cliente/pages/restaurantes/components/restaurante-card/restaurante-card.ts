@@ -30,4 +30,8 @@ export class RestauranteCard {
     input<DireccionDTO>();
   public horarioApertura: InputSignal<string> = input('');
   public horarioCierre: InputSignal<string> = input('');
+  public imagenUrl = input<string | undefined>();
+  constructor(){
+    console.log(this.imagenUrl);
+  }
 }

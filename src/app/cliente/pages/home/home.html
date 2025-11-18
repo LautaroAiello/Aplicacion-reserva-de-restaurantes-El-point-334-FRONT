@@ -5,9 +5,9 @@
     item.id) {
     <app-simple-card
       [title]="item.nombre"
-      [imgUrl]="'https://picsum.photos/seed/' + item.id + '/200/200'"
+      [src]="item.imagenUrl"
       [id]="+item.id"
-      [subtitle]="item.direccion.calle + ', ' + item.direccion.ciudad"
+      [subtitle]="item.direccion.calle+' '+item.direccion.numero+ ', ' + item.direccion.ciudad"
       (cardClicked)="cardClicked($event)"
     >
     </app-simple-card>
@@ -24,9 +24,9 @@
     track item.id) {
     <app-simple-card
       [title]="item.nombre"
-      [imgUrl]="'https://picsum.photos/seed/' + item.id + '/300/200'"
+      [src]="item.imagenUrl"
       [id]="+item.id"
-      [subtitle]="item.direccion.calle + ', ' + item.direccion.ciudad"
+      [subtitle]="item.direccion.calle+' '+item.direccion.numero+ ', ' + item.direccion.ciudad"
       (cardClicked)="cardClicked($event)"
     >
     </app-simple-card>
@@ -43,9 +43,9 @@
     track item.id) {
     <app-simple-card
       [title]="item.nombre"
-      [imgUrl]="'https://picsum.photos/seed/' + item.id + '/200/200'"
+      [src]="item.imagenUrl"
       [id]="+item.id"
-      [subtitle]="item.direccion.calle + ', ' + item.direccion.ciudad"
+      [subtitle]="item.direccion.calle +' '+item.direccion.numero+ ', ' + item.direccion.ciudad"
       (cardClicked)="cardClicked($event)"
     >
     </app-simple-card>

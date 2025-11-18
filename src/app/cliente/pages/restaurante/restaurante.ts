@@ -2,12 +2,15 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
+  input,
+  InputSignal,
   OnInit,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Observable, switchMap } from 'rxjs';
 import {
+  DireccionDTO,
   RestauranteDTO,
   RestauranteService,
 } from '../../../core/services/restaurante.service';
@@ -37,7 +40,8 @@ export class ClienteRestaurantePage implements OnInit {
   private restauranteService = inject(RestauranteService);
 
   public restaurante$!: Observable<RestauranteDTO>;
-
+  public direccion: InputSignal<DireccionDTO | undefined> = input<DireccionDTO>();
+  
   ngOnInit() {
     this.restaurante$ = this.route.params.pipe(
       switchMap((params) => {

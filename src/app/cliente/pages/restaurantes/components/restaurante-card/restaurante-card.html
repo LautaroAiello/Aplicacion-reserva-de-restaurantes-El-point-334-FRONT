@@ -1,9 +1,8 @@
 <button>
   <img
-    [src]="'https://picsum.photos/seed/' + id() + '/400/200'"
+    [src]="imagenUrl() ? imagenUrl() : 'https://picsum.photos/seed/' + id() + '/400/200'"
     [alt]="nombreRestaurante()"
   />
-
   <div class="info-container">
     <h3>{{ nombreRestaurante() }}</h3>
     <div class="info-row">

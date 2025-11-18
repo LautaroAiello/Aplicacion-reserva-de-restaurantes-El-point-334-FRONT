@@ -21,8 +21,7 @@ export interface RestauranteDTO {
   horarioCierre: string;
   activo: boolean;
   direccion: DireccionDTO; // <-- Es un objeto
-  // NOTA: 'imagenUrl', 'calificacion', 'distancia' y 'etiquetas'
-  // NO VIENEN en este DTO, según tu metadata.
+  imagenUrl: string;
 }
 // DTO para la SAGA 2 (Asignar Gestor)
 // (basado en el DTO de restaurant-service y la SAGA)
@@ -134,7 +133,7 @@ export interface PlatoCreateDTO {
 })
 export class RestauranteService {
   private http = inject(HttpClient);
-  private apiUrl = environment.apiUrl;
+  private apiUrl = `${environment.apiUrl}`;
 
   // SAGA (POST /catalogo/restaurantes)
   registrarRestaurante(payload: RegistroRestauranteDTO): Observable<any> {
