@@ -57,3 +57,123 @@ button[mat-flat-button] {
   gap: 8px;
   margin: 10px 0;
 }
+
+/* ... Tus estilos anteriores ... */
+
+.mapa-layout {
+    align-items: stretch; /* Para ocupar el ancho */
+}
+
+.mapa-header {
+    text-align: center;
+    margin-bottom: 15px;
+    
+    h4 { margin-bottom: 5px; }
+    .info-texto {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        color: #666;
+        font-size: 0.9rem;
+        
+        .small-icon { font-size: 18px; height: 18px; width: 18px; }
+    }
+}
+
+/* GRILLA DE MESAS */
+.mesas-grid {
+    display: grid;
+    /* Crea columnas automáticas de mínimo 100px */
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); 
+    gap: 15px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border: 1px dashed #ccc;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.mesa-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 5px;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+
+    mat-icon {
+        color: #757575;
+        margin-bottom: 5px;
+    }
+
+    .mesa-nombre {
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+
+    .mesa-capacidad {
+        font-size: 0.75rem;
+        color: #888;
+    }
+
+    &:hover {
+        border-color: #2196f3; // Azul hover
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    /* ESTADO SELECCIONADO */
+    &.selected {
+        background-color: #e3f2fd; // Azul claro fondo
+        border-color: #2196f3;
+        
+        mat-icon { color: #1976d2; }
+    }
+
+    /* ESTADO BLOQUEADO (Ocupada o inactiva) */
+    &.bloqueada {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background-color: #eeeeee;
+        &:hover { transform: none; box-shadow: none; border-color: #e0e0e0; }
+    }
+
+    /* Tilde de confirmación */
+    .check-badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #4caf50;
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        mat-icon {
+            font-size: 14px;
+            width: 14px;
+            height: 14px;
+            margin: 0;
+            color: white;
+        }
+    }
+}
+
+.actions-bar {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}

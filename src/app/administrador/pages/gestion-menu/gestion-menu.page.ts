@@ -14,10 +14,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { catchError, throwError, tap, forkJoin } from 'rxjs';
 import {
-  RestauranteService,
-  PlatoDTO,
-  PlatoCreateDTO,
-  CategoriaPlatoDTO,
+  RestauranteService
 } from '../../../core/services/restaurante.service';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -31,6 +28,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select'; // <-- Para Categorías
+import { CategoriaPlatoDTO, PlatoCreateDTO, PlatoDTO } from '../../../core/models/platos.model';
 
 @Component({
   selector: 'app-gestion-menu-page',

@@ -7,7 +7,8 @@ import {
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { CommonModule } from '@angular/common'; // Importar CommonModule
-import { DireccionDTO } from '../../../../../core/services/restaurante.service'; // Importar DTO
+import { DireccionDTO } from '../../../../../core/models/restaurante.model';
+
 
 @Component({
   selector: 'app-restaurante-card',

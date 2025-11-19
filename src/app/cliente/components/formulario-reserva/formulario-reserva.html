@@ -50,18 +50,48 @@
     Consultar Disponibilidad
   </button>
 </form>
-} @if (estado() === 'disponible') {
-<div class="estado-container">
-  <h4>¡Hay lugar!</h4>
-  <p>
-    Hay disponibilidad para {{ reservaForm.value.cantidadPersonas }} personas el
-    {{ reservaForm.value.fecha | date:'d/M' }} a las {{ reservaForm.value.hora
-    }} hs.
-  </p>
+}
+@if (estado() === 'disponible') {
+<div class="estado-container mapa-layout">
+  <div class="mapa-header">
+    <h4>Selecciona tu mesa</h4>
+    <p class="info-texto">
+      <mat-icon class="small-icon">info</mat-icon>
+      Personas: {{ reservaForm.value.cantidadPersonas }} | Fecha: {{ reservaForm.value.fecha | date:'dd/MM' }} {{ reservaForm.value.hora }}hs
+    </p>
+  </div>
 
-  <button mat-flat-button color="primary" (click)="onConfirmarReserva()">
-    Confirmar Reserva
-  </button>
-  <button mat-button (click)="resetForm()">Cambiar Fecha/Hora</button>
+  <div class="mesas-grid">
+    @for (mesa of mesas(); track mesa.id) {
+      <div 
+        class="mesa-item" 
+        [class.selected]="mesasSeleccionadas().has(mesa.id)"
+        [class.bloqueada]="mesa.bloqueada"
+        (click)="!mesa.bloqueada && toggleMesa(mesa.id)"
+      >
+        <mat-icon>table_restaurant</mat-icon>
+        <span class="mesa-nombre">{{ mesa.descripcion || 'Mesa ' + mesa.id }}</span>
+        <span class="mesa-capacidad">cap: {{ mesa.capacidad }}</span>
+        
+        @if (mesasSeleccionadas().has(mesa.id)) {
+          <div class="check-badge">
+            <mat-icon>check</mat-icon>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="actions-bar">
+    <button mat-button (click)="resetForm()">Atrás</button>
+    <button 
+        mat-flat-button 
+        color="primary" 
+        (click)="onConfirmarReserva()"
+        [disabled]="mesasSeleccionadas().size === 0"
+    >
+      Confirmar ({{ mesasSeleccionadas().size }})
+    </button>
+  </div>
 </div>
 }

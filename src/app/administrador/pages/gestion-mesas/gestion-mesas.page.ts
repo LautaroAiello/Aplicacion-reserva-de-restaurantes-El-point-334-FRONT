@@ -14,9 +14,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { catchError, throwError, tap } from 'rxjs';
 import {
-  RestauranteService,
-  MesaDTO,
-  MesaCreateDTO,
+  RestauranteService
 } from '../../../core/services/restaurante.service';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -30,6 +28,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table'; // <-- Para la tabla
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle'; // <-- Para "bloqueada"
+import { MesaCreateDTO, MesaDTO } from '../../../core/models/mesa.model';
 
 @Component({
   selector: 'app-gestion-mesas-page',
@@ -70,7 +69,7 @@ export class GestionMesasPage implements OnInit {
     'acciones',
   ];
 
-  private restauranteId!: string;
+  private restauranteId!: number;
 
   ngOnInit() {
     // 1. Obtenemos el ID del restaurante
@@ -84,7 +83,7 @@ export class GestionMesasPage implements OnInit {
       this.cargando.set(false);
       return;
     }
-    this.restauranteId = miRestaurante.restauranteId.toString();
+    this.restauranteId = miRestaurante.restauranteId;
 
     // 2. Creamos el formulario de nueva mesa
     this.mesaForm = this.fb.group({

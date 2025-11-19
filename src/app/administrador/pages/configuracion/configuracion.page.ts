@@ -15,9 +15,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { catchError, throwError } from 'rxjs';
 import {
-  RestauranteService,
-  RestauranteDTO,
-  RestauranteUpdateDTO,
+  RestauranteService
 } from '../../../core/services/restaurante.service';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -28,6 +26,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { RestauranteDTO, RestauranteUpdateDTO } from '../../../core/models/restaurante.model';
 
 @Component({
   selector: 'app-configuracion-page',

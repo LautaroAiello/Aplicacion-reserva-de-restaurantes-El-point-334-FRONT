@@ -10,8 +10,6 @@ import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Observable, switchMap } from 'rxjs';
 import {
-  DireccionDTO,
-  RestauranteDTO,
   RestauranteService,
 } from '../../../core/services/restaurante.service';
 import { FormularioReserva } from '../../components/formulario-reserva/formulario-reserva';
@@ -20,6 +18,7 @@ import { FormularioReserva } from '../../components/formulario-reserva/formulari
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { DireccionDTO, RestauranteDTO } from '../../../core/models/restaurante.model';
 
 @Component({
   selector: 'app-cliente-restaurante-page',

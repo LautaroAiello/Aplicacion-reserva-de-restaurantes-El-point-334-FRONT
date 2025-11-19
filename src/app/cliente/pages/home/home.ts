@@ -9,9 +9,9 @@ import { SimpleCard } from '../../components/simple-card/simple-card';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
 import {
-  RestauranteDTO,
-  RestauranteService,
+  RestauranteService
 } from '../../../core/services/restaurante.service';
+import { RestauranteDTO } from '../../../core/models/restaurante.model';
 
 @Component({
   selector: 'app-cliente-home-page',

@@ -15,8 +15,7 @@ import {
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import {
-  RestauranteService,
-  RegistroRestauranteDTO,
+  RestauranteService
 } from '../../../core/services/restaurante.service';
 import { catchError, throwError } from 'rxjs';
 
@@ -27,6 +26,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar'; // <-- Importa MatSnackBarModule
+import { RegistroRestauranteDTO } from '../../../core/models/restaurante.model';
 
 @Component({
   selector: 'app-administrador-register-page',

@@ -8,10 +8,10 @@ import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {
-  MisReservasResponse,
   ReservasService,
 } from '../../../core/services/reservas.service';
 import { ReservaCard } from '../../components/reserva-card/reserva-card'; // <-- Importar
+import { MisReservasResponse } from '../../../core/models/reserva.model';
 
 @Component({
   selector: 'app-cliente-reservas-page',

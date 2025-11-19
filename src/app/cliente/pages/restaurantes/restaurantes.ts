@@ -7,11 +7,11 @@ import {
 import { RestauranteCard } from './components/restaurante-card/restaurante-card';
 import { BuscadorConFiltro } from '../../components/buscador-con-filtro/buscador-con-filtro';
 import {
-  RestauranteService,
-  RestauranteDTO,
+  RestauranteService
 } from '../../../core/services/restaurante.service';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common'; // <-- Necesario para | async
+import { RestauranteDTO } from '../../../core/models/restaurante.model';
 
 @Component({
   selector: 'app-cliente-restaurantes-page',
