@@ -3,9 +3,16 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
 import { MesaCreateDTO, MesaDTO } from '../models/mesa.model';
-import { RegistroRestauranteDTO, RestauranteDTO, RestauranteUpdateDTO } from '../models/restaurante.model';
-import { CategoriaPlatoDTO, PlatoCreateDTO, PlatoDTO } from '../models/platos.model';
-
+import {
+  RegistroRestauranteDTO,
+  RestauranteDTO,
+  RestauranteUpdateDTO,
+} from '../models/restaurante.model';
+import {
+  CategoriaPlatoDTO,
+  PlatoCreateDTO,
+  PlatoDTO,
+} from '../models/platos.model';
 
 // DTO para la SAGA 2 (Asignar Gestor)
 // (basado en el DTO de restaurant-service y la SAGA)
@@ -16,7 +23,6 @@ export interface GestorCreationDTO {
   password: string;
   telefono: string;
 }
-
 
 @Injectable({
   providedIn: 'root',
@@ -104,7 +110,26 @@ export class RestauranteService {
   getListarCategoriasPlatos(): Observable<CategoriaPlatoDTO[]> {
     // (Ajusta la URL si es /api/restaurant/categorias-plato o similar)
     return this.http.get<CategoriaPlatoDTO[]>(
-      `${this.apiUrl}/api/restaurant/categorias-plato`
+      `${this.apiUrl}/api/restaurant/restaurantes/categoriasPlato`
+    );
+  }
+
+  // PUT: Actualizar Plato
+  actualizarPlato(
+    restauranteId: string,
+    platoId: number,
+    payload: PlatoCreateDTO
+  ): Observable<PlatoDTO> {
+    return this.http.put<PlatoDTO>(
+      `${this.apiUrl}/api/restaurant/restaurantes/${restauranteId}/platos/${platoId}`,
+      payload
+    );
+  }
+
+  // DELETE: Eliminar Plato
+  eliminarPlato(restauranteId: string, platoId: number): Observable<void> {
+    return this.http.delete<void>(
+      `${this.apiUrl}/api/restaurant/restaurantes/${restauranteId}/platos/${platoId}`
     );
   }
 }

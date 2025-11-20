@@ -18,31 +18,76 @@ import { CommonModule } from '@angular/common';
   template: `
     <div class="admin-container">
       <h1>Panel de Administrador</h1>
-      <p>Bienvenido. Desde aquí puedes gestionar tus restaurantes.</p>
+      <p>Bienvenido. Desde aquí puedes gestionar tu restaurante.</p>
 
       @if (adminRestauranteId()) {
       <div class="dashboard-actions">
-        <mat-card> </mat-card>
-
-        <mat-card> </mat-card>
-
         <mat-card>
           <mat-card-header
-            ><mat-card-title>Gestión de Menú</mat-card-title></mat-card-header
+            ><mat-card-title>Configuración</mat-card-title></mat-card-header
           >
           <mat-card-content
-            ><p>Añadir y editar los platos de tu carta.</p></mat-card-content
+            ><p>
+              Editar datos generales, dirección y horarios.
+            </p></mat-card-content
           >
           <mat-card-actions>
-            <a mat-flat-button color="primary" [routerLink]="['/admin/menu']">
-              Gestionar Menú
-            </a>
+            <a mat-flat-button color="primary" routerLink="/admin/configuracion"
+              >Ir a Configuración</a
+            >
           </mat-card-actions>
         </mat-card>
 
-        <mat-card> </mat-card>
+        <mat-card>
+          <mat-card-header
+            ><mat-card-title>Mesas y Salón</mat-card-title></mat-card-header
+          >
+          <mat-card-content
+            ><p>Crear, editar y bloquear mesas del salón.</p></mat-card-content
+          >
+          <mat-card-actions>
+            <a mat-flat-button color="primary" routerLink="/admin/mesas"
+              >Gestionar Mesas</a
+            >
+          </mat-card-actions>
+        </mat-card>
+
+        <mat-card>
+          <mat-card-header
+            ><mat-card-title>Menú y Platos</mat-card-title></mat-card-header
+          >
+          <mat-card-content
+            ><p>Administrar platos, precios y categorías.</p></mat-card-content
+          >
+          <mat-card-actions>
+            <a mat-flat-button color="primary" routerLink="/admin/menu"
+              >Gestionar Menú</a
+            >
+          </mat-card-actions>
+        </mat-card>
+
+        <mat-card>
+          <mat-card-header
+            ><mat-card-title>Equipo</mat-card-title></mat-card-header
+          >
+          <mat-card-content
+            ><p>
+              Crear cuentas para tus empleados (Gestores).
+            </p></mat-card-content
+          >
+          <mat-card-actions>
+            <a
+              mat-flat-button
+              color="primary"
+              [routerLink]="['/admin/asignar-gestor', adminRestauranteId()]"
+              >Asignar Gestor</a
+            >
+          </mat-card-actions>
+        </mat-card>
       </div>
-      } @else { }
+      } @else {
+      <p>No tienes un restaurante asignado.</p>
+      }
     </div>
   `,
   styles: `

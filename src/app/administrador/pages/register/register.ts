@@ -14,9 +14,7 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import {
-  RestauranteService
-} from '../../../core/services/restaurante.service';
+import { RestauranteService } from '../../../core/services/restaurante.service';
 import { catchError, throwError } from 'rxjs';
 
 // Material
@@ -56,13 +54,40 @@ export class AdministradorRegisterPage implements OnInit {
   // Define errorMessage como un signal
   protected errorMessage = signal<string | null>(null);
 
+  get restauranteGroup(): FormGroup {
+    return this.registerForm.get('restaurante') as FormGroup;
+  }
+
+  get direccionGroup(): FormGroup {
+    return this.registerForm.get('direccion') as FormGroup;
+  }
+
+  get adminGroup(): FormGroup {
+    return this.registerForm.get('admin') as FormGroup;
+  }
+
+  // Getter nuevo para el grupo fiscal
+  get fiscalGroup(): FormGroup {
+    return this.registerForm.get('fiscal') as FormGroup;
+  }
+
   ngOnInit() {
     this.registerForm = this.fb.group({
-      // ... (el resto de tu formulario que ya estaba bien)
-      nombre: ['', Validators.required],
-      telefono: ['', Validators.required],
-      horarioApertura: ['09:00:00', Validators.required],
-      horarioCierre: ['23:00:00', Validators.required],
+      // GRUPO  Datos del Restaurante
+      restaurante: this.fb.group({
+        nombre: ['', Validators.required],
+        telefono: ['', Validators.required],
+        horarioApertura: ['09:00', Validators.required], // Nota: sin segundos para el input type="time"
+        horarioCierre: ['23:00', Validators.required],
+        imagenUrl: [''],
+      }),
+
+      fiscal: this.fb.group({
+        cuit: ['', Validators.required],
+        razonSocial: ['', Validators.required],
+      }),
+
+      // GRUPO  Dirección (Ya estaba agrupado, perfecto)
       direccion: this.fb.group({
         calle: ['', Validators.required],
         numero: ['', Validators.required],
@@ -70,11 +95,15 @@ export class AdministradorRegisterPage implements OnInit {
         provincia: ['', Validators.required],
         pais: ['Argentina', Validators.required],
       }),
-      nombreUsuario: ['', Validators.required],
-      apellidoUsuario: ['', Validators.required],
-      emailUsuario: ['', [Validators.required, Validators.email]],
-      passwordUsuario: ['', [Validators.required, Validators.minLength(8)]],
-      telefonoUsuario: [''],
+
+      // GRUPO  Datos del Admin
+      admin: this.fb.group({
+        nombreUsuario: ['', Validators.required],
+        apellidoUsuario: ['', Validators.required],
+        emailUsuario: ['', [Validators.required, Validators.email]],
+        passwordUsuario: ['', [Validators.required, Validators.minLength(8)]],
+        telefonoUsuario: [''],
+      }),
     });
   }
 
@@ -85,7 +114,28 @@ export class AdministradorRegisterPage implements OnInit {
     }
     this.errorMessage.set(null); // <-- Usa .set() para actualizar el signal
 
-    const payload: RegistroRestauranteDTO = this.registerForm.value;
+    const formValue = this.registerForm.value;
+
+    const payload: RegistroRestauranteDTO = {
+      // Sacamos los datos del grupo 'restaurante'
+      nombre: formValue.restaurante.nombre,
+      telefono: formValue.restaurante.telefono,
+      horarioApertura: formValue.restaurante.horarioApertura + ':00', // Agregamos segundos si hace falta
+      horarioCierre: formValue.restaurante.horarioCierre + ':00',
+      imagenUrl: formValue.restaurante.imagenUrl,
+
+      cuit: formValue.fiscal.cuit,
+      razonSocial: formValue.fiscal.razonSocial,
+      // El grupo direccion ya coincide
+      direccion: formValue.direccion,
+
+      // Sacamos los datos del grupo 'admin'
+      nombreUsuario: formValue.admin.nombreUsuario,
+      apellidoUsuario: formValue.admin.apellidoUsuario,
+      emailUsuario: formValue.admin.emailUsuario,
+      passwordUsuario: formValue.admin.passwordUsuario,
+      telefonoUsuario: formValue.admin.telefonoUsuario,
+    };
 
     this.restauranteService
       .registrarRestaurante(payload)

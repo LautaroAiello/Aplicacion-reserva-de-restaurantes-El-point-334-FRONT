@@ -26,19 +26,14 @@ export interface RegistroRestauranteDTO {
   telefono: string;
   horarioApertura: string; // "HH:mm:ss"
   horarioCierre: string; // "HH:mm:ss"
+  imagenUrl: string;
 
-  // Objeto de Dirección (anidado)
-  direccion: {
-    calle: string;
-    numero: string;
-    ciudad: string;
-    provincia: string;
-    pais: string;
-    latitud?: number;
-    longitud?: number;
-  };
+  cuit: string; // <--- NUEVO
+  razonSocial: string; // <--- NUEVO
 
-  // Datos del Admin (planos)
+  direccion: DireccionDTO;
+
+  // Datos Admin
   nombreUsuario: string;
   apellidoUsuario: string;
   emailUsuario: string;

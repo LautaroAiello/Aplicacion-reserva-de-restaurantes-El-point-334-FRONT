@@ -4,7 +4,14 @@
     <mat-card-content>
       <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
         <mat-vertical-stepper [linear]="true" #stepper>
-          <mat-step label="Datos del Restaurante" [stepControl]="registerForm">
+          <!-- ================================================== -->
+          <!-- PASO 1: DATOS DEL RESTAURANTE                      -->
+          <!-- ================================================== -->
+          <mat-step
+            label="Datos del Restaurante"
+            formGroupName="restaurante"
+            [stepControl]="restauranteGroup"
+          >
             <mat-form-field appearance="outline">
               <mat-label>Nombre del Restaurante</mat-label>
               <input matInput formControlName="nombre" />
@@ -18,34 +25,66 @@
             <div class="form-row">
               <mat-form-field appearance="outline">
                 <mat-label>Horario Apertura</mat-label>
-                <input
-                  matInput
-                  formControlName="horarioApertura"
-                  type="time"
-                  placeholder="HH:mm:ss"
-                />
+                <input matInput formControlName="horarioApertura" type="time" />
               </mat-form-field>
               <mat-form-field appearance="outline">
                 <mat-label>Horario Cierre</mat-label>
-                <input
-                  matInput
-                  formControlName="horarioCierre"
-                  type="time"
-                  placeholder="HH:mm:ss"
-                />
+                <input matInput formControlName="horarioCierre" type="time" />
               </mat-form-field>
             </div>
-
+            <mat-form-field appearance="outline">
+              <mat-label>URL de Imagen de Portada</mat-label>
+              <input
+                matInput
+                formControlName="imagenUrl"
+                placeholder="https://..."
+              />
+              <mat-hint>Pega el enlace de una imagen de internet</mat-hint>
+            </mat-form-field>
             <div>
               <button mat-button matStepperNext type="button">Siguiente</button>
             </div>
           </mat-step>
 
-          <mat-step label="Dirección" formGroupName="direccion">
+          <mat-step
+            label="Datos Fiscales"
+            formGroupName="fiscal"
+            [stepControl]="fiscalGroup"
+          >
+            <mat-form-field appearance="outline">
+              <mat-label>Razón Social</mat-label>
+              <input matInput formControlName="razonSocial" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>CUIT</mat-label>
+              <input
+                matInput
+                formControlName="cuit"
+                placeholder="20-12345678-9"
+              />
+            </mat-form-field>
+
+            <div>
+              <button mat-button matStepperPrevious type="button">
+                Volver
+              </button>
+              <button mat-button matStepperNext type="button">Siguiente</button>
+            </div>
+          </mat-step>
+          <!-- ================================================== -->
+          <!-- PASO 2: DIRECCIÓN                                  -->
+          <!-- ================================================== -->
+          <mat-step
+            label="Dirección"
+            formGroupName="direccion"
+            [stepControl]="direccionGroup"
+          >
             <mat-form-field appearance="outline">
               <mat-label>Calle</mat-label>
               <input matInput formControlName="calle" />
             </mat-form-field>
+
             <mat-form-field appearance="outline">
               <mat-label>Número</mat-label>
               <input matInput formControlName="numero" />
@@ -75,22 +114,29 @@
             </div>
           </mat-step>
 
+          <!-- ================================================== -->
+          <!-- PASO 3: DATOS DEL ADMINISTRADOR                    -->
+          <!-- ================================================== -->
           <mat-step
             label="Datos del Administrador"
-            [stepControl]="registerForm"
+            formGroupName="admin"
+            [stepControl]="adminGroup"
           >
             <mat-form-field appearance="outline">
               <mat-label>Tu Nombre</mat-label>
               <input matInput formControlName="nombreUsuario" />
             </mat-form-field>
+
             <mat-form-field appearance="outline">
               <mat-label>Tu Apellido</mat-label>
               <input matInput formControlName="apellidoUsuario" />
             </mat-form-field>
+
             <mat-form-field appearance="outline">
               <mat-label>Tu Email (será tu usuario)</mat-label>
               <input matInput formControlName="emailUsuario" type="email" />
             </mat-form-field>
+
             <mat-form-field appearance="outline">
               <mat-label>Contraseña (mín. 8 caracteres)</mat-label>
               <input
@@ -99,6 +145,7 @@
                 type="password"
               />
             </mat-form-field>
+
             <mat-form-field appearance="outline">
               <mat-label>Tu Teléfono</mat-label>
               <input matInput formControlName="telefonoUsuario" type="tel" />
@@ -112,13 +159,18 @@
             </div>
           </mat-step>
 
+          <!-- ================================================== -->
+          <!-- PASO 4: CONFIRMACIÓN                               -->
+          <!-- ================================================== -->
           <mat-step label="Confirmar">
             <p>
               ¡Todo listo! Revisa los datos y haz clic en "Finalizar Registro".
             </p>
+
             @if (errorMessage()) {
             <div class="error-message">{{ errorMessage() }}</div>
             }
+
             <div>
               <button mat-button matStepperPrevious type="button">
                 Volver

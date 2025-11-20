@@ -15,6 +15,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { catchError, throwError } from 'rxjs';
+import { MatDivider } from '@angular/material/divider';
 
 @Component({
   selector: 'app-cliente-login-page',
@@ -28,6 +29,7 @@ import { catchError, throwError } from 'rxjs';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    MatDivider,
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',

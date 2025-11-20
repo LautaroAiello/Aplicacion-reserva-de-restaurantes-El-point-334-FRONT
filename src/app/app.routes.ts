@@ -1,19 +1,68 @@
 import { Routes } from '@angular/router';
 import { ClienteLayout } from './cliente/layout/cliente/cliente';
-import { authGuard } from './core/guards/auth-guard';
-import { adminGuard } from './core/guards/admin-guard';
+import { authGuard } from './core/guards/auth-guard'; // Asegúrate de que el nombre del archivo coincida
+import { adminGuard } from './core/guards/admin-guard'; // Asegúrate de que el nombre del archivo coincida
 
 export const routes: Routes = [
+  // =========================================================
+  // 1. RUTAS PÚBLICAS DE ADMINISTRADOR (¡Deben ir PRIMERO!)
+  // =========================================================
+  // Al estar arriba, Angular entra aquí sin activar el adminGuard
+  {
+    path: 'admin/login',
+    loadComponent: () =>
+      import('./administrador/pages/login/login').then(
+        (c) => c.AdministradorLoginPage
+      ),
+  },
+  {
+    path: 'admin/register',
+    loadComponent: () =>
+      import('./administrador/pages/register/register').then(
+        (c) => c.AdministradorRegisterPage
+      ),
+  },
+
+  // =========================================================
+  // 2. RUTA PROTEGIDA DE ADMINISTRADOR (Dashboard y Gestión)
+  // =========================================================
+  // Captura todo lo demás que empiece con 'admin/...'
+  {
+    path: 'admin',
+    canActivate: [adminGuard], // El guardia protege todo lo que esté aquí dentro
+    loadChildren: () =>
+      import('./administrador/admin.routes').then((r) => r.adminRoutes),
+  },
+
+  // =========================================================
+  // 3. RUTAS PÚBLICAS DE CLIENTE (Login/Registro)
+  // =========================================================
+  {
+    path: 'login',
+    loadComponent: () =>
+      import('./cliente/pages/login/login').then((c) => c.ClienteLoginPage),
+  },
+  {
+    path: 'register',
+    loadComponent: () =>
+      import('./cliente/pages/register/register').then(
+        (c) => c.ClienteRegisterPage
+      ),
+  },
+
+  // =========================================================
+  // 4. LAYOUT PRINCIPAL DE CLIENTE (Home, Reservas, etc.)
+  // =========================================================
   {
     path: '',
     component: ClienteLayout,
     children: [
       {
         path: 'home',
-        data: { titulo: 'Bievenido', headerMobileDisponible: true },
+        data: { titulo: 'Bienvenido', headerMobileDisponible: true },
         loadComponent: () =>
           import('./cliente/pages/home/home').then((c) => c.ClienteHomePage),
-        canActivate: [authGuard],
+        canActivate: [authGuard], // Protegemos el home si es necesario
       },
       {
         path: 'restaurantes',
@@ -61,40 +110,12 @@ export const routes: Routes = [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
     ],
   },
-  {
-    path: 'admin',
-    canActivate: [adminGuard],
-    loadChildren: () =>
-      import('./administrador/admin.routes').then((r) => r.adminRoutes),
-  },
-  {
-    path: 'login',
-    loadComponent: () =>
-      import('./cliente/pages/login/login').then((c) => c.ClienteLoginPage),
-  },
-  {
-    path: 'register',
-    loadComponent: () =>
-      import('./cliente/pages/register/register').then(
-        (c) => c.ClienteRegisterPage
-      ),
-  },
-  {
-    path: 'admin/login',
-    loadComponent: () =>
-      import('./administrador/pages/login/login').then(
-        (c) => c.AdministradorLoginPage
-      ),
-  },
-  {
-    path: 'admin/register',
-    loadComponent: () =>
-      import('./administrador/pages/register/register').then(
-        (c) => c.AdministradorRegisterPage
-      ),
-  },
+
+  // =========================================================
+  // 5. COMODÍN (404)
+  // =========================================================
   {
     path: '**',
-    redirectTo: '',
+    redirectTo: '', // O a un componente NotFoundPage
   },
 ];

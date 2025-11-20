@@ -1,12 +1,15 @@
 <div class="gestion-container">
   <h1>Gestión de Menú</h1>
 
+  <!-- ============================================= -->
+  <!-- 1. FORMULARIO (CREAR PLATO)                   -->
+  <!-- ============================================= -->
   <mat-card class="form-card">
     <mat-card-header>
       <mat-card-title>Añadir Nuevo Plato</mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <form [formGroup]="platoForm" (ngSubmit)="onCrearPlato()">
+      <form [formGroup]="platoForm" (ngSubmit)="onGuardarPlato()">
         <mat-form-field appearance="outline">
           <mat-label>Nombre del Plato</mat-label>
           <input matInput formControlName="nombre" />
@@ -43,7 +46,11 @@
 
         <mat-form-field appearance="outline">
           <mat-label>URL de la Imagen (opcional)</mat-label>
-          <input matInput formControlName="imagenUrl" />
+          <input
+            matInput
+            formControlName="imagenUrl"
+            placeholder="https://..."
+          />
         </mat-form-field>
 
         @if (errorMessage()) {
@@ -62,48 +69,82 @@
     </mat-card-content>
   </mat-card>
 
+  <!-- ============================================= -->
+  <!-- 2. TABLA (LISTADO DE PLATOS)                  -->
+  <!-- ============================================= -->
   <mat-card class="tabla-card">
     <mat-card-header>
       <mat-card-title>Platos Actuales</mat-card-title>
     </mat-card-header>
     <mat-card-content>
+      <!-- Spinner de carga -->
       @if (cargando()) {
       <div class="spinner-container">
         <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
       </div>
-      } @if (!cargando() && listaPlatos().length > 0) {
+      }
+
+      <!-- Tabla de datos -->
+      @if (!cargando() && listaPlatos().length > 0) {
       <table mat-table [dataSource]="listaPlatos()">
-        <ng-container matColumnDef="nombre">
-          <th mat-header-cell *matHeaderCellDef>Plato</th>
-          <td mat-cell *matCellDef="let plato">{{plato.nombre}}</td>
+        <!-- Columna Imagen -->
+        <ng-container matColumnDef="imagen">
+          <th mat-header-cell *matHeaderCellDef>Imagen</th>
+          <td mat-cell *matCellDef="let plato">
+            <!-- Fallback a placeholder si la imagen falla o es nula -->
+            <img
+              [src]="plato.imagenUrl || 'assets/placeholder-food.png'"
+              alt="Foto"
+              class="plato-thumbnail"
+              onerror="this.src='https://placehold.co/50x50?text=Sin+Foto'"
+            />
+          </td>
         </ng-container>
 
+        <!-- Columna Nombre -->
+        <ng-container matColumnDef="nombre">
+          <th mat-header-cell *matHeaderCellDef>Plato</th>
+          <td mat-cell *matCellDef="let plato">
+            <strong>{{plato.nombre}}</strong>
+          </td>
+        </ng-container>
+
+        <!-- Columna Categoría (CORREGIDA CON ?.) -->
         <ng-container matColumnDef="categoria">
           <th mat-header-cell *matHeaderCellDef>Categoría</th>
           <td mat-cell *matCellDef="let plato">
-            {{plato.categoriaPlato.nombre}}
+            {{ plato.categoriaPlato?.nombre || 'Sin Categoría' }}
           </td>
         </ng-container>
 
+        <!-- Columna Precio -->
         <ng-container matColumnDef="precio">
           <th mat-header-cell *matHeaderCellDef>Precio</th>
-          <td mat-cell *matCellDef="let plato">${{plato.precio | number}}</td>
+          <td mat-cell *matCellDef="let plato">
+            ${{ plato.precio | number:'1.0-2' }}
+          </td>
         </ng-container>
 
+        <!-- Columna Estado (CORREGIDA CON ?.) -->
         <ng-container matColumnDef="estado">
           <th mat-header-cell *matHeaderCellDef>Estado</th>
           <td mat-cell *matCellDef="let plato">
-            <span [ngClass]="plato.estado.toLowerCase()">{{plato.estado}}</span>
+            <!-- Añadimos ?. para evitar error si estado es null -->
+            <span [ngClass]="plato.estado?.toLowerCase()">
+              {{ plato.estado || 'Desconocido' }}
+            </span>
           </td>
         </ng-container>
 
+        <!-- Columna Acciones -->
         <ng-container matColumnDef="acciones">
           <th mat-header-cell *matHeaderCellDef>Acciones</th>
           <td mat-cell *matCellDef="let plato">
-            <button mat-icon-button color="primary">
+            <button mat-icon-button color="primary" (click)="onEditar(plato)">
               <mat-icon>edit</mat-icon>
             </button>
-            <button mat-icon-button color="warn">
+
+            <button mat-icon-button color="warn" (click)="onEliminar(plato)">
               <mat-icon>delete</mat-icon>
             </button>
           </td>
@@ -112,7 +153,10 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
-      } @if (!cargando() && listaPlatos().length === 0) {
+      }
+
+      <!-- Mensaje si no hay datos -->
+      @if (!cargando() && listaPlatos().length === 0) {
       <p class="no-items">Aún no has añadido ningún plato.</p>
       }
     </mat-card-content>

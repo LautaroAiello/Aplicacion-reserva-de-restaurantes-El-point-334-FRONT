@@ -47,8 +47,20 @@
       </form>
     </mat-card-content>
 
-    <mat-card-actions>
-      <p>¿No tenés cuenta? <a routerLink="/register">Registrate acá</a></p>
+    <mat-card-actions class="actions-container">
+      <div class="cliente-actions">
+        <span>¿No tenés cuenta?</span>
+        <a routerLink="/register" class="link">Registrate acá</a>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <div class="admin-actions">
+        <span>¿Tenés un restaurante?</span>
+        <a mat-stroked-button color="accent" routerLink="/admin/login">
+          Acceso Dueños / Admin
+        </a>
+      </div>
     </mat-card-actions>
   </mat-card>
 </div>

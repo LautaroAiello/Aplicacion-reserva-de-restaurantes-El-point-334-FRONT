@@ -2,8 +2,10 @@
 .gestion-container {
   padding: 24px;
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* Siempre en columna (uno abajo del otro) */
   gap: 24px;
+  max-width: 1000px; /* Ancho máximo para que no se estire demasiado */
+  margin: 0 auto;
 }
 
 @media (min-width: 960px) {
@@ -36,6 +38,15 @@ mat-card-content form {
 button[mat-flat-button] {
   padding: 10px 0;
 }
+.plato-thumbnail {
+  width: 50px;
+  height: 50px;
+  object-fit: cover; // Recorta la imagen para que no se deforme
+  border-radius: 8px;
+  margin-right: 8px;
+  display: block;
+  background-color: #eee; // Color de fondo si no carga
+}
 table {
   width: 100%;
 }
@@ -54,8 +65,20 @@ table {
 td span.disponible {
   color: #4caf50;
   font-weight: 500;
+  background: #e8f5e9;
+  padding: 4px 8px;
+  border-radius: 4px;
 }
 td span.agotado {
   color: #f44336;
   font-weight: 500;
+  background: #ffebee;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
 }
