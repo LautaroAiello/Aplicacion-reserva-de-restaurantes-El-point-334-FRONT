@@ -50,3 +50,65 @@ hr {
   border-top: 1px solid #eee;
   margin: 16px 0;
 }
+.form-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px; // Espacio entre tarjetas
+}
+
+mat-card-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  mat-form-field {
+    flex: 1;
+  }
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid #eee;
+  margin: 24px 0;
+}
+
+h3 {
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.actions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+
+  button {
+    padding: 12px 24px;
+    font-size: 1.1rem;
+  }
+}
+
+// --- ZONA DE PELIGRO ---
+.danger-zone {
+  border: 1px solid #ffcdd2; // Borde rojizo suave
+  background-color: #fff5f5; // Fondo rojizo muy suave
+}
+
+.danger-title {
+  color: #d32f2f; // Rojo fuerte
+}
+
+.danger-zone button {
+  margin-top: 10px;
+}

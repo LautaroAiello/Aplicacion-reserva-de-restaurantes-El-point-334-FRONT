@@ -132,4 +132,10 @@ export class RestauranteService {
       `${this.apiUrl}/api/restaurant/restaurantes/${restauranteId}/platos/${platoId}`
     );
   }
+
+  eliminarRestaurante(id: string): Observable<void> {
+    return this.http.delete<void>(
+      `${this.apiUrl}/api/restaurant/restaurantes/${id}`
+    );
+  }
 }

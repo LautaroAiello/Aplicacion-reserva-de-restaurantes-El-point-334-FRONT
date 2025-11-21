@@ -1,4 +1,5 @@
 <div class="form-container">
+  <!-- TARJETA PRINCIPAL: DATOS Y CONFIGURACIÓN -->
   <mat-card>
     <mat-card-header>
       <mat-card-title>Configurar mi Restaurante</mat-card-title>
@@ -8,42 +9,88 @@
       @if (cargando()) {
       <div class="spinner-container">
         <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
-        <p>Cargando datos...</p>
       </div>
       } @if (!cargando() && !errorMessage()) {
       <form [formGroup]="configForm" (ngSubmit)="onSubmit()">
+        <!-- SECCIÓN 1: DATOS GENERALES -->
         <h3>Datos Generales</h3>
+
         <mat-form-field appearance="outline">
           <mat-label>Nombre del Restaurante</mat-label>
           <input matInput formControlName="nombre" />
         </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>URL Imagen de Portada</mat-label>
+          <input
+            matInput
+            formControlName="imagenUrl"
+            placeholder="https://..."
+          />
+        </mat-form-field>
+
         <mat-form-field appearance="outline">
           <mat-label>Teléfono</mat-label>
           <input matInput formControlName="telefono" type="tel" />
         </mat-form-field>
+
         <div class="form-row">
           <mat-form-field appearance="outline">
-            <mat-label>Horario Apertura</mat-label>
+            <mat-label>Apertura</mat-label>
             <input matInput formControlName="horarioApertura" type="time" />
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <mat-label>Horario Cierre</mat-label>
+            <mat-label>Cierre</mat-label>
             <input matInput formControlName="horarioCierre" type="time" />
           </mat-form-field>
         </div>
 
         <hr />
 
+        <!-- SECCIÓN 2: PREFERENCIAS DE RESERVA -->
+        <h3 formGroupName="configuracion">Preferencias de Reserva</h3>
+        <div formGroupName="configuracion">
+          <div class="form-row">
+            <!-- SELECT 1: Anticipación -->
+            <mat-form-field appearance="outline">
+              <mat-label>Anticipación Mínima</mat-label>
+              <mat-select formControlName="tiempoAnticipacionHoras">
+                @for (horas of opcionesHoras; track horas) {
+                <mat-option [value]="horas">{{ horas }} horas antes</mat-option>
+                }
+              </mat-select>
+              <mat-hint>Tiempo requerido antes de reservar</mat-hint>
+            </mat-form-field>
+
+            <!-- SELECT 2: Personas -->
+            <mat-form-field appearance="outline">
+              <mat-label>Mín. Personas (Evento Largo)</mat-label>
+              <mat-select formControlName="minPersonasEventoLargo">
+                @for (personas of opcionesPersonas; track personas) {
+                <mat-option [value]="personas"
+                  >{{ personas }} personas</mat-option
+                >
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <hr />
+
+        <!-- SECCIÓN 3: DIRECCIÓN -->
         <h3 formGroupName="direccion">Dirección</h3>
         <div formGroupName="direccion">
-          <mat-form-field appearance="outline">
-            <mat-label>Calle</mat-label>
-            <input matInput formControlName="calle" />
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Número</mat-label>
-            <input matInput formControlName="numero" />
-          </mat-form-field>
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Calle</mat-label>
+              <input matInput formControlName="calle" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Número</mat-label>
+              <input matInput formControlName="numero" />
+            </mat-form-field>
+          </div>
           <div class="form-row">
             <mat-form-field appearance="outline">
               <mat-label>Ciudad</mat-label>
@@ -54,28 +101,43 @@
               <input matInput formControlName="provincia" />
             </mat-form-field>
           </div>
-          <mat-form-field appearance="outline">
-            <mat-label>País</mat-label>
-            <input matInput formControlName="pais" />
-          </mat-form-field>
         </div>
 
         @if (errorMessage()) {
         <div class="error-message">{{ errorMessage() }}</div>
         }
 
-        <button
-          mat-flat-button
-          color="primary"
-          type="submit"
-          [disabled]="configForm.invalid || cargando()"
-        >
-          Guardar Cambios
-        </button>
+        <div class="actions">
+          <button
+            mat-flat-button
+            color="primary"
+            type="submit"
+            [disabled]="configForm.invalid || cargando()"
+          >
+            Guardar Cambios
+          </button>
+        </div>
       </form>
-      } @if (errorMessage() && !configForm) {
-      <div class="error-message">{{ errorMessage() }}</div>
       }
     </mat-card-content>
   </mat-card>
+
+  <!-- ZONA DE PELIGRO (Eliminar Restaurante) -->
+  @if (!cargando()) {
+  <mat-card class="danger-zone">
+    <mat-card-header>
+      <mat-card-title class="danger-title">Zona de Peligro</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <p>
+        Eliminar este restaurante borrará todos los datos, reservas, platos y
+        configuraciones permanentemente.
+      </p>
+      <button mat-stroked-button color="warn" (click)="onEliminarRestaurante()">
+        <mat-icon>delete_forever</mat-icon>
+        Eliminar Restaurante
+      </button>
+    </mat-card-content>
+  </mat-card>
+  }
 </div>

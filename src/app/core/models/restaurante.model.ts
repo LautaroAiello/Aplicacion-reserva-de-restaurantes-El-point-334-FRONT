@@ -17,6 +17,7 @@ export interface RestauranteDTO {
   activo: boolean;
   direccion: DireccionDTO; // <-- Es un objeto
   imagenUrl: string;
+  configuracion?: ConfiguracionRestauranteDTO;
 }
 
 // Define tu DTO complejo
@@ -47,5 +48,10 @@ export interface RestauranteUpdateDTO {
   horarioApertura: string; // "HH:mm:ss"
   horarioCierre: string; // "HH:mm:ss"
   direccion: DireccionDTO;
-  // (Asumimos que 'activo' y 'entidad_fiscal_id' se manejan por separado)
+  imagenUrl: string;
+  configuracion: ConfiguracionRestauranteDTO;
+}
+export interface ConfiguracionRestauranteDTO {
+  tiempoAnticipacionMinutos: number;
+  minPersonasEventoLargo: number;
 }
