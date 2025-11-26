@@ -54,4 +54,11 @@ export interface RestauranteUpdateDTO {
 export interface ConfiguracionRestauranteDTO {
   tiempoAnticipacionMinutos: number;
   minPersonasEventoLargo: number;
+  
+}
+
+export interface EtiquetaDTO {
+  id: number;
+  nombre: string;
+  imagenUrl: string;
 }

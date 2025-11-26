@@ -1,18 +1,21 @@
-<app-buscador-con-filtro></app-buscador-con-filtro>
+<app-buscador-con-filtro (filtrosCambiados)="filtrarRestaurantes($event)"></app-buscador-con-filtro>
 
-<div class="lista-restaurantes">
-  @if (restaurantes$ | async; as restaurantes) {
-    @for (item of restaurantes; track item.id) {
-    <app-restaurante-card
-      [id]="item.id"
-      [nombreRestaurante]="item.nombre"
-      [direccion]="item.direccion"
-      [horarioApertura]="item.horarioApertura"
-      [horarioCierre]="item.horarioCierre"
-      [imagenUrl]="item.imagenUrl"
-    >
-    </app-restaurante-card>
-    } } @else {
-    <p>Cargando restaurantes...</p>
+@if (loading()) {
+  <p>Cargando...</p>
+} @else {
+  <div class="lista-restaurantes">
+    @for (item of restaurantes(); track item.id) {
+      <app-restaurante-card
+        [id]="item.id"
+        [nombreRestaurante]="item.nombre"
+        [direccion]="item.direccion"
+        [horarioApertura]="item.horarioApertura"
+        [horarioCierre]="item.horarioCierre"
+        [imagenUrl]="item.imagenUrl"
+      >
+      </app-restaurante-card>
+    } @empty {
+      <p>No se encontraron restaurantes con esos filtros.</p>
     }
-</div>
+  </div>
+}

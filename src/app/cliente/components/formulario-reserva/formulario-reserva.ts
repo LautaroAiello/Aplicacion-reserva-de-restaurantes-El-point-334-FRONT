@@ -170,10 +170,23 @@ export class FormularioReserva {
           return throwError(() => err);
         })
       )
-      .subscribe(() => {
-        this.estado.set('confirmada');
-        this.abrirPopUpExito();
+      .subscribe({
+        next: () => {
+          this.estado.set('confirmada');
+          this.abrirPopUpExito();
+        },
+        error: (err) => {
+          // Aquí capturas el mensaje "Conflicto de disponibilidad..."
+          const mensajeDelBack = err.error?.message || 'Error desconocido al reservar.';
+    
+          this.errorMessage.set(mensajeDelBack); 
+          this.estado.set('error'); // Esto mostrará el div de error en tu HTML
+        }
       });
+      // .subscribe(() => {
+      //   this.estado.set('confirmada');
+      //   this.abrirPopUpExito();
+      // });
   }
 
   abrirPopUpExito() {

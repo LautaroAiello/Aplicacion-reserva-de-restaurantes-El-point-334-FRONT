@@ -7,12 +7,14 @@ import {
   RegistroRestauranteDTO,
   RestauranteDTO,
   RestauranteUpdateDTO,
+  EtiquetaDTO
 } from '../models/restaurante.model';
 import {
   CategoriaPlatoDTO,
   PlatoCreateDTO,
   PlatoDTO,
 } from '../models/platos.model';
+import { HttpParams } from '@angular/common/http';
 
 // DTO para la SAGA 2 (Asignar Gestor)
 // (basado en el DTO de restaurant-service y la SAGA)
@@ -137,5 +139,22 @@ export class RestauranteService {
     return this.http.delete<void>(
       `${this.apiUrl}/api/restaurant/restaurantes/${id}`
     );
+  }
+
+  //EITIUQUETAS
+  getEtiquetas(): Observable<EtiquetaDTO[]> {
+    // Asegúrate de crear este endpoint en tu EtiquetaController del backend
+    // O usa el de /restaurantes/etiquetas si lo pusiste ahí
+    return this.http.get<EtiquetaDTO[]>(`${this.apiUrl}/api/restaurant/v1/etiquetas`); 
+  }
+
+  buscarRestaurantes(nombre: string, etiqueta: string): Observable<RestauranteDTO[]> {
+    let params = new HttpParams();
+    
+    // Solo agregamos los parámetros si tienen valor
+    if (nombre) params = params.set('nombre', nombre);
+    if (etiqueta) params = params.set('etiqueta', etiqueta);
+
+    return this.http.get<RestauranteDTO[]>(`${this.apiUrl}/api/restaurant/restaurantes/buscar`, { params });
   }
 }

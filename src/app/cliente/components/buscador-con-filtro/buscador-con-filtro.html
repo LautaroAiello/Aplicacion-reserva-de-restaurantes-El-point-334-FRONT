@@ -1,16 +1,51 @@
-<div>
-    <mat-form-field appearance="outline" style="width: 100%;">
-        <mat-label>Restaurantes,platos...</mat-label>
-        <input matInput placeholder="Buscar...">
-        <mat-icon matSuffix>search</mat-icon>
-        <mat-icon matSuffix>filter_alt</mat-icon>
-    </mat-form-field>
+<div class="buscador-wrapper">
+  
+  <div class="search-box">
+    <mat-icon class="search-icon">search</mat-icon>
+    
+    <input 
+      type="text" 
+      placeholder="Buscar restaurante..." 
+      [ngModel]="busquedaTexto()"
+      (ngModelChange)="busquedaTexto.set($event); onSearchChange()"
+    >
+    
+    @if (busquedaTexto()) {
+      <mat-icon 
+        class="clear-icon" 
+        (click)="busquedaTexto.set(''); onSearchChange()"
+      >close</mat-icon>
+    }
+  </div>
 
-    <mat-chip-set aria-label="Fish selection">
-        <mat-chip>Lugares disponibles</mat-chip>
-        <mat-chip>Segundo filtro</mat-chip>
-        <mat-chip>Tercer filtro</mat-chip>
-    </mat-chip-set>
+  <div class="tags-carousel">
+    
+    <div 
+      class="tag-card" 
+      [class.active]="tagSeleccionada() === ''"
+      (click)="seleccionarTag('')"
+    >
+      <div class="icon-circle default">
+        <mat-icon>restaurant</mat-icon>
+      </div>
+      <span>Todas</span>
+    </div>
 
-
+    @for (tag of etiquetas(); track tag.id) {
+      <div 
+        class="tag-card" 
+        [class.active]="tagSeleccionada() === tag.nombre"
+        (click)="seleccionarTag(tag.nombre)"
+      >
+        <div class="icon-circle">
+          <img 
+            [src]="tag.imagenUrl" 
+            [alt]="tag.nombre" 
+            onerror="this.style.display='none'"
+          >
+        </div>
+        <span>{{ tag.nombre }}</span>
+      </div>
+    }
+  </div>
 </div>
