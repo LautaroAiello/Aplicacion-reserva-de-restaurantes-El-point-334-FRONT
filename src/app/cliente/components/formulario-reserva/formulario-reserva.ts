@@ -32,6 +32,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { CrearReservaPayload } from '../../../core/models/reserva.model';
 import { MesaDTO } from '../../../core/models/mesa.model';
 
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { Router } from '@angular/router';
+import { ReservaExitosaDialog } from '../../../shared/reserva-exitosa-dialog/reserva-exitosa-dialog';
+
 @Component({
   selector: 'app-formulario-reserva',
   standalone: true,
@@ -46,6 +50,7 @@ import { MesaDTO } from '../../../core/models/mesa.model';
     MatSelectModule,
     MatProgressSpinnerModule,
     MatIconModule,
+    MatDialogModule
   ],
   templateUrl: './formulario-reserva.html',
   styleUrl: './formulario-reserva.scss',
@@ -58,6 +63,9 @@ export class FormularioReserva {
   private reservasService = inject(ReservasService);
   private restauranteService = inject(RestauranteService); // <--- INYECTAR
   private authService = inject(AuthService);
+
+  private dialog = inject(MatDialog);
+  private router = inject(Router);
 
   protected estado = signal<'idle' | 'loading' | 'disponible' | 'error' | 'confirmada'>('idle');
   protected errorMessage = signal<string | null>(null);
@@ -164,6 +172,20 @@ export class FormularioReserva {
       )
       .subscribe(() => {
         this.estado.set('confirmada');
+        this.abrirPopUpExito();
+      });
+  }
+
+  abrirPopUpExito() {
+      const dialogRef = this.dialog.open(ReservaExitosaDialog, {  
+      width: '400px',
+      disableClose: true // Obliga a pulsar el botón para cerrar
+      });
+    
+      dialogRef.afterClosed().subscribe(() => {
+        // Cuando el usuario cierra el popup, lo redirigimos
+        this.router.navigate(['/home']); 
+        // Opcional: ir a 'mis-reservas'
       });
   }
 
