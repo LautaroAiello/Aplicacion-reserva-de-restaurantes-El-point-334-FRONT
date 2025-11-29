@@ -1,50 +1,77 @@
 <div class="form-container">
-  <mat-card>
+  <mat-card class="relative-card">
     <mat-card-header>
       <mat-card-title>Asignar Nuevo Gestor</mat-card-title>
-      <mat-card-subtitle>Restaurante ID: {{ restauranteId }}</mat-card-subtitle>
+      <mat-card-subtitle>Crear cuenta para Restaurante ID: {{ restauranteId }}</mat-card-subtitle>
     </mat-card-header>
 
     <mat-card-content>
+      
+      <!-- Overlay de carga -->
+      @if (cargando()) {
+        <div class="loading-overlay">
+          <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
+        </div>
+      }
+
       <form [formGroup]="gestorForm" (ngSubmit)="onSubmit()">
+        
         <div class="form-row">
           <mat-form-field appearance="outline">
             <mat-label>Nombre</mat-label>
             <input matInput formControlName="nombre" />
+            <mat-error>Requerido</mat-error>
           </mat-form-field>
           <mat-form-field appearance="outline">
             <mat-label>Apellido</mat-label>
             <input matInput formControlName="apellido" />
+            <mat-error>Requerido</mat-error>
           </mat-form-field>
         </div>
 
         <mat-form-field appearance="outline">
-          <mat-label>Email (será su usuario)</mat-label>
+          <mat-label>Email (Usuario)</mat-label>
           <input matInput formControlName="email" type="email" />
+          <mat-error>Email inválido</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Teléfono</mat-label>
           <input matInput formControlName="telefono" type="tel" />
+          <mat-error>Solo números</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Contraseña Temporal</mat-label>
-          <input matInput formControlName="password" type="password" />
+          <input 
+            matInput 
+            [type]="hidePassword() ? 'password' : 'text'" 
+            formControlName="password" 
+          />
+          <button 
+            mat-icon-button 
+            matSuffix 
+            (click)="togglePassword($event)" 
+            [attr.aria-label]="'Ocultar contraseña'">
+            <mat-icon>{{hidePassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
+          <mat-hint>Mínimo 6 caracteres</mat-hint>
+          <mat-error>Requerido (min 6 chars)</mat-error>
         </mat-form-field>
 
         @if (errorMessage()) {
-        <div class="error-message">{{ errorMessage() }}</div>
+          <div class="error-message">
+            <mat-icon>error</mat-icon>
+            <span>{{ errorMessage() }}</span>
+          </div>
         }
 
-        <button
-          mat-flat-button
-          color="primary"
-          type="submit"
-          [disabled]="gestorForm.invalid"
-        >
-          Crear y Asignar Gestor
-        </button>
+        <div class="actions">
+          <button mat-flat-button color="primary" type="submit" [disabled]="gestorForm.invalid || cargando()">
+            Crear y Asignar Gestor
+          </button>
+        </div>
+        
       </form>
     </mat-card-content>
   </mat-card>

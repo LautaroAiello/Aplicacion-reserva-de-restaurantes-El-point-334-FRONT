@@ -30,3 +30,15 @@ export interface MisReservasResponse {
   cantidadPersonas: number;
   estado: string; // Ej: "CONFIRMADA", "CANCELADA"
 }
+
+export interface ReservaAdminDTO {
+  id: number;
+  fechaHora: string;
+  cantidadPersonas: number;
+  estado: 'PENDIENTE' | 'CONFIRMADA' | 'RECHAZADA' | 'CANCELADA';
+  observaciones: string;
+  usuarioId: number;
+  nombreCliente: string;
+  apellidoCliente: string;
+  mesasIds: number[];
+}

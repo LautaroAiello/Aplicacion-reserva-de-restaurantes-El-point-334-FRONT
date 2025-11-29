@@ -112,3 +112,33 @@ h3 {
 .danger-zone button {
   margin-top: 10px;
 }
+
+// ... estilos existentes ...
+
+h4 {
+  margin-top: 16px;
+  margin-bottom: 8px;
+  color: #555;
+  font-weight: 500;
+}
+
+.map-help {
+  font-size: 13px;
+  color: #666;
+  background-color: #f0f4ff; // Azul muy clarito
+  padding: 10px;
+  border-radius: 4px;
+  border-left: 4px solid #3f51b5; // Borde azul
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+
+  mat-icon { font-size: 18px; height: 18px; width: 18px; }
+}
+
+.map-preview-link {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}

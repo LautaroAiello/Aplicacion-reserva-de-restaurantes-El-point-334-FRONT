@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Observable, switchMap, of } from 'rxjs';
-import { CrearReservaPayload, DisponibilidadPayload, DisponibilidadResponse, MisReservasResponse } from '../models/reserva.model';
+import { CrearReservaPayload, DisponibilidadPayload, DisponibilidadResponse, MisReservasResponse, ReservaAdminDTO } from '../models/reserva.model';
 
 
 
@@ -39,6 +39,21 @@ export class ReservasService {
     return this.http.get<MisReservasResponse[]>(
       `${this.apiUrl}/api/reserva/reservas/mias`
     );
+  }
+
+  // Obtener reservas de un restaurante
+  getReservasPorRestaurante(restauranteId: string): Observable<ReservaAdminDTO[]> {
+    return this.http.get<ReservaAdminDTO[]>(
+      `${this.apiUrl}/api/reserva/reservas/restaurante/${restauranteId}`
+    );
+  }
+  // Actualizar estado (Aceptar/Rechazar)
+  // Asumimos que el backend tiene un PUT genérico o un PATCH para estado
+  // Si no tienes uno específico, usamos el actualizarReserva que ya tenías
+  actualizarEstadoReserva(id: number, nuevoEstado: string): Observable<any> {
+    // Enviamos solo el estado (o el objeto parcial según tu backend soporte)
+    // Ajusta esto según tu controller de actualización
+    return this.http.put(`${this.apiUrl}/api/reserva/reservas/${id}`, { estado: nuevoEstado });
   }
 
   // (Aquí también podrías tener 'cancelarReserva()', etc.)

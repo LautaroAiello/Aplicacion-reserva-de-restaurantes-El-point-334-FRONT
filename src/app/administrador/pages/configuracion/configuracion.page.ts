@@ -94,6 +94,8 @@ export class ConfiguracionPage implements OnInit {
         ciudad: ['', Validators.required],
         provincia: ['', Validators.required],
         pais: ['Argentina', Validators.required],
+        latitud: [null],  // Opcional por ahora
+        longitud: [null]  // Opcional por ahora
       }),
       configuracion: this.fb.group({
         // Aquí guardaremos el valor en HORAS (2, 3, 4...) aunque al back vayan minutos
@@ -123,7 +125,11 @@ export class ConfiguracionPage implements OnInit {
           horarioApertura: data.horarioApertura,
           horarioCierre: data.horarioCierre,
           imagenUrl: data.imagenUrl,
-          direccion: data.direccion,
+          direccion: {
+            // ... calle, numero ...
+            // El patchValue llenará latitud y longitud automáticamente si vienen en data.direccion
+            ...data.direccion 
+          },
           // Si 'configuracion' viene null del backend, usamos valores por defecto vacíos
           configuracion: {
             tiempoAnticipacionHoras: horasAnticipacion, // Usamos la variable convertida

@@ -15,6 +15,7 @@ import {
   PlatoDTO,
 } from '../models/platos.model';
 import { HttpParams } from '@angular/common/http';
+import {UsuarioCreationDTO} from '../models/usuario.models'
 
 // DTO para la SAGA 2 (Asignar Gestor)
 // (basado en el DTO de restaurant-service y la SAGA)
@@ -55,13 +56,15 @@ export class RestauranteService {
   // --- NUEVO MÉTODO (SAGA 2) ---
   asignarGestor(
     restauranteId: string,
-    payload: GestorCreationDTO
+    payload: UsuarioCreationDTO
   ): Observable<any> {
     return this.http.post(
       `${this.apiUrl}/api/restaurant/restaurantes/${restauranteId}/gestores`,
-      payload
+     payload,
+      { responseType: 'text' } // <--- ¡ESTO ES CRUCIAL! Evita el error de parseo JSON
     );
   }
+
 
   // --- NUEVO MÉTODO (PUT) ---
   actualizarRestaurante(
