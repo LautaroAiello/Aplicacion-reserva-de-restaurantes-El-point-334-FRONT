@@ -160,4 +160,21 @@ export class RestauranteService {
 
     return this.http.get<RestauranteDTO[]>(`${this.apiUrl}/api/restaurant/restaurantes/buscar`, { params });
   }
+
+  // src/app/core/services/restaurante.service.ts
+
+  toggleFavorito(restauranteId: number, usuarioId: number): Observable<boolean> {
+    return this.http.post<boolean>(
+      `${this.apiUrl}/favoritos/${restauranteId}?usuarioId=${usuarioId}`, 
+      {}
+    );
+  }
+
+  getMisFavoritos(usuarioId: number): Observable<RestauranteDTO[]> {
+    return this.http.get<RestauranteDTO[]>(`${this.apiUrl}/favoritos/mis-favoritos?usuarioId=${usuarioId}`);
+  }
+
+  getPopulares(top: number = 5): Observable<RestauranteDTO[]> {
+    return this.http.get<RestauranteDTO[]>(`${this.apiUrl}/favoritos/populares?top=${top}`);
+  }
 }
