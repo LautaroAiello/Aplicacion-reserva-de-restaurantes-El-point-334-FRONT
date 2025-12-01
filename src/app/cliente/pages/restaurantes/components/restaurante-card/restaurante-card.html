@@ -1,25 +1,44 @@
-<button>
-  <img
-    [src]="imagenUrl() ? imagenUrl() : 'https://picsum.photos/seed/' + id() + '/400/200'"
-    [alt]="nombreRestaurante()"
-  />
-  <div class="info-container">
-    <h3>{{ nombreRestaurante() }}</h3>
-    <div class="info-row">
-      <mat-icon>access_time</mat-icon>
-      <span>{{ horarioApertura() }} - {{ horarioCierre() }}</span>
-    </div>
+<div class="card-wrapper" (click)="navegarAlDetalle()">
+
+  <div class="image-header">
+
+    <img
+      [src]="imagenUrl() ? imagenUrl() : 'assets/images/placeholder-restaurante.jpg'"
+      [alt]="nombreRestaurante()"
+      class="card-image"
+      onerror="this.src='https://picsum.photos/400/200?blur=2'"
+    />
+
+    <button
+      mat-icon-button
+      class="fav-btn"
+      [class.active]="isFavorite()"
+      (click)="$event.stopPropagation(); onFavoriteClick()"
+      aria-label="Alternar favorito"
+    >
+      <mat-icon>{{ isFavorite() ? 'favorite' : 'favorite_border' }}</mat-icon>
+    </button>
+    
+    <div class="image-overlay"></div>
   </div>
 
-  @if (direccion(); as dir) {
-  <div class="info-container">
-    <p class="direccion">{{ dir.calle }} {{ dir.numero }}, {{ dir.ciudad }}</p>
-    <div class="lugares-disponibles">
-      <div class="star-container">
-        <mat-icon>star</mat-icon>
+  <div class="card-content">
+    <div class="info-container">
+      <h3 class="card-title">{{ nombreRestaurante() }}</h3>
+      <div class="info-row">
+        <mat-icon class="info-icon">access_time</mat-icon>
+        <span>{{ horarioApertura() }} - {{ horarioCierre() }}</span>
       </div>
-      <span>Ver disponibilidad</span>
     </div>
+
+    @if (direccion(); as dir) {
+    <div class="card-footer">
+      <p class="direccion">
+        <mat-icon class="info-icon location">place</mat-icon>
+        {{ dir.calle }} {{ dir.numero }}
+        @if(dir.ciudad) {, {{ dir.ciudad }}}
+      </p>
+    </div>
+    }
   </div>
-  }
-</button>
+</div>

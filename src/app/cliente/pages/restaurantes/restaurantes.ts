@@ -3,11 +3,12 @@ import {
   Component,
   inject,
   OnInit,
-  signal, // 1. Importar signal
+  signal,
 } from '@angular/core';
 import { RestauranteCard } from './components/restaurante-card/restaurante-card';
 import { BuscadorConFiltro } from '../../components/buscador-con-filtro/buscador-con-filtro';
 import { RestauranteService } from '../../../core/services/restaurante.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
 import { RestauranteDTO } from '../../../core/models/restaurante.model';
 
@@ -21,11 +22,10 @@ import { RestauranteDTO } from '../../../core/models/restaurante.model';
 })
 export class ClienteRestaurantesPage implements OnInit {
   private restauranteService = inject(RestauranteService);
+  private authService = inject(AuthService);
 
-  // 2. DEFINICIÓN DE SIGNALS
-  // Cambiamos Observable por signal para poder usar .set()
   public restaurantes = signal<RestauranteDTO[]>([]);
-  public loading = signal<boolean>(true); // Inicializamos en true para la carga inicial
+  public loading = signal<boolean>(true);
 
   ngOnInit() {
     this.cargarRestaurantesIniciales();
@@ -33,8 +33,15 @@ export class ClienteRestaurantesPage implements OnInit {
 
   cargarRestaurantesIniciales() {
     this.loading.set(true);
-    // Nos suscribimos manualmente para pasar el valor al Signal
-    this.restauranteService.getListarRestaurantes().subscribe({
+    
+    // 1. OBTENER ID RAW (String o Null)
+    const rawId = this.authService.getUsuarioIdFromToken(); 
+
+    // 2. CONVERTIR A NUMBER (Solución al error 1)
+    // Si rawId existe, lo convertimos a número. Si no, mandamos undefined.
+    const usuarioId = rawId ? Number(rawId) : undefined;
+
+    this.restauranteService.getRestaurantes(usuarioId).subscribe({
       next: (data) => {
         this.restaurantes.set(data);
         this.loading.set(false);
@@ -46,20 +53,59 @@ export class ClienteRestaurantesPage implements OnInit {
     });
   }
 
-  filtrarRestaurantes(filtros: { nombre: string; etiqueta: string }) {
+  filtrarRestaurantes(filtros: { nombre: string; etiqueta: string; soloPopulares: boolean }) {
     this.loading.set(true);
 
-    // Llamamos al endpoint de búsqueda
-    this.restauranteService.buscarRestaurantes(filtros.nombre, filtros.etiqueta)
-      .subscribe({
+    // Obtenemos ID de usuario (para pintar los corazones correctamente en cualquier lista)
+    const rawId = this.authService.getUsuarioIdFromToken();
+    const usuarioId = rawId ? Number(rawId) : undefined;
+
+    // 💡 LÓGICA DE DECISIÓN
+    if (filtros.soloPopulares) {
+      // LLAMADA AL RANKING GLOBAL
+      console.log("Cargando Top 10 Populares...");
+      
+      // Asegúrate de tener este método en tu RestauranteService
+      this.restauranteService.getPopulares(usuarioId).subscribe({
         next: (data) => {
-          this.restaurantes.set(data); // Ahora sí funciona el .set()
+          this.restaurantes.set(data);
           this.loading.set(false);
         },
         error: (err) => {
-          console.error('Error filtrando', err);
-          this.loading.set(false);
-        },
+            console.error(err);
+            this.loading.set(false);
+        }
       });
+
+    } else {
+      // BÚSQUEDA NORMAL
+      this.restauranteService.buscarRestaurantes(filtros.nombre, filtros.etiqueta) // Nota: buscarRestaurantes debería aceptar usuarioId si quieres corazones ahí también
+        .subscribe({
+          next: (data) => {
+            this.restaurantes.set(data);
+            this.loading.set(false);
+          },
+          error: () => this.loading.set(false),
+        });
+    }
+  }
+
+  onToggleFavorito(restauranteId: string | number) {
+    const rawId = this.authService.getUsuarioIdFromToken();
+    
+    if (!rawId) {
+      alert("Debes iniciar sesión para guardar favoritos.");
+      return;
+    }
+
+    // Convertir a número aquí también
+    const usuarioId = Number(rawId);
+
+    this.restauranteService.toggleFavorito(+restauranteId, usuarioId).subscribe({
+      next: (esFavorito) => {
+        console.log(`Favorito actualizado: ${esFavorito}`);
+      },
+      error: (err) => console.error('Error al guardar favorito', err)
+    });
   }
 }

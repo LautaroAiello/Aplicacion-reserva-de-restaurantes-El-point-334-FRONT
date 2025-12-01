@@ -35,9 +35,9 @@ export class ClienteHomePage implements OnInit {
   // Quita el 'protected mockCards = [...]'
 
   ngOnInit() {
-    this.populares$ = this.restauranteService.getListarRestaurantes();
-    this.reservarNuevo$ = this.restauranteService.getListarRestaurantes(); // Ajustar si tienes otro endpoint
-    this.mejoresPuntuados$ = this.restauranteService.getListarRestaurantes(); // Ajustar si tienes otro endpoint
+    this.populares$ = this.restauranteService.getRestaurantes();
+    this.reservarNuevo$ = this.restauranteService.getRestaurantes(); // Ajustar si tienes otro endpoint
+    this.mejoresPuntuados$ = this.restauranteService.getRestaurantes(); // Ajustar si tienes otro endpoint
   }
 
   // Navega al detalle del restaurante

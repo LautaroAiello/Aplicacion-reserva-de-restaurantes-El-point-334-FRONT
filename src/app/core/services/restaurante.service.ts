@@ -42,10 +42,17 @@ export class RestauranteService {
     );
   }
 
-  getListarRestaurantes(): Observable<RestauranteDTO[]> {
-    return this.http.get<RestauranteDTO[]>(
-      `${this.apiUrl}/api/restaurant/restaurantes`
-    );
+  // getListarRestaurantes(): Observable<RestauranteDTO[]> {
+  //   return this.http.get<RestauranteDTO[]>(
+  //     `${this.apiUrl}/api/restaurant/restaurantes`
+  //   );
+  // }
+  getRestaurantes(usuarioId?: number): Observable<RestauranteDTO[]> {
+    let url = `${this.apiUrl}/api/restaurant/restaurantes`;
+    if (usuarioId) {
+      url += `?usuarioId=${usuarioId}`;
+    }
+    return this.http.get<RestauranteDTO[]>(url);
   }
 
   getRestaurantePorId(id: string): Observable<RestauranteDTO> {
@@ -159,5 +166,29 @@ export class RestauranteService {
     if (etiqueta) params = params.set('etiqueta', etiqueta);
 
     return this.http.get<RestauranteDTO[]>(`${this.apiUrl}/api/restaurant/restaurantes/buscar`, { params });
+  }
+
+  // src/app/core/services/restaurante.service.ts
+
+  toggleFavorito(restauranteId: number, usuarioId: number): Observable<boolean> {
+    // POST a /favoritos/{restId}?usuarioId={userId}
+    return this.http.post<boolean>(
+      `${this.apiUrl}/api/restaurant/favoritos/${restauranteId}?usuarioId=${usuarioId}`, 
+      {}
+    );
+  }
+
+ getMisFavoritos(usuarioId: number): Observable<RestauranteDTO[]> {
+    return this.http.get<RestauranteDTO[]>(
+      `${this.apiUrl}/api/restaurant/favoritos/mis-favoritos?usuarioId=${usuarioId}`
+    );
+  }
+
+  getPopulares(usuarioId?: number, top: number = 10): Observable<RestauranteDTO[]> {
+    let url = `${this.apiUrl}/api/restaurant/favoritos/populares?top=${top}`;
+    if (usuarioId) {
+      url += `&usuarioId=${usuarioId}`;
+    }
+    return this.http.get<RestauranteDTO[]>(url);
   }
 }

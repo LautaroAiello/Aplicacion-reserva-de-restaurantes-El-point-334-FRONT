@@ -12,6 +12,9 @@
         [horarioApertura]="item.horarioApertura"
         [horarioCierre]="item.horarioCierre"
         [imagenUrl]="item.imagenUrl"
+        
+        [esFavoritoInicial]="item.esFavorito ?? false" 
+        (toggleFavorito)="onToggleFavorito($event)"
       >
       </app-restaurante-card>
     } @empty {

@@ -48,4 +48,14 @@
       </div>
     }
   </div>
+  <div class="filtros-extra">
+    <div 
+      class="filtro-chip popular" 
+      [class.active]="filtroPopularesActivo()"
+      (click)="togglePopulares()"
+    >
+      <mat-icon>trending_up</mat-icon>
+      <span>Más Populares (Top 10)</span>
+    </div>
+  </div>
 </div>

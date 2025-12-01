@@ -18,6 +18,7 @@ export interface RestauranteDTO {
   direccion: DireccionDTO; // <-- Es un objeto
   imagenUrl: string;
   configuracion?: ConfiguracionRestauranteDTO;
+  esFavorito?: boolean;
 }
 
 // Define tu DTO complejo
