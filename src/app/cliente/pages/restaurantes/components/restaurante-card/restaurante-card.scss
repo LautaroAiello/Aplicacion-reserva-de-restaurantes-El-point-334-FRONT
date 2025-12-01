@@ -72,3 +72,136 @@ img {
 .mat-mdc-standard-chip {
     --mat-chip-label-text-color: #ffffff;
 }
+
+// Contenedor principal de la tarjeta
+.card-wrapper {
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: 16px; // Bordes redondeados modernos
+  overflow: hidden; // Para que la imagen no se salga de los bordes redondeados
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+  }
+}
+
+// --- SECCIÓN DE IMAGEN Y BOTÓN ---
+.image-header {
+  position: relative; // 👈 CLAVE: Esto define el contexto para el botón absoluto
+  width: 100%;
+  height: 180px; // Altura fija para que todas las tarjetas sean iguales
+
+  .card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; // La imagen llena el espacio sin deformarse
+    display: block;
+  }
+
+  // Opcional: Un degradado sutil en la parte inferior de la imagen para contraste
+  .image-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: linear-gradient(to top, rgba(0,0,0,0.4), transparent);
+    pointer-events: none; // Para que no interfiera con el click
+  }
+
+  // EL BOTÓN FLOTANTE
+  .fav-btn {
+    position: absolute; // Se ubica relativo a .image-header
+    bottom: 12px;       // 👈 Ubicación inferior
+    right: 12px;        // 👈 Ubicación derecha
+    z-index: 10;
+    
+    // Estilo del botón para que resalte sobre la imagen
+    background-color: rgba(255, 255, 255, 0.9); // Fondo blanco semi-transparente
+    color: #555; // Color gris para cuando no está activo
+    transition: all 0.2s ease-in-out;
+    
+    // Ajuste de tamaño del mat-icon-button si es necesario
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+        font-size: 22px; // Tamaño del icono interno
+    }
+
+    // Estado cuando está activo (like dado)
+    &.active {
+      color: #e91e63; // Color rosado/rojo vibrante
+      background-color: white; // Fondo blanco sólido
+      transform: scale(1.05); // Un pequeño efecto de "pop"
+      box-shadow: 0 2px 8px rgba(233, 30, 99, 0.3);
+    }
+
+    &:hover:not(.active) {
+        background-color: white;
+        color: #333;
+    }
+  }
+}
+
+// --- SECCIÓN DE CONTENIDO ---
+.card-content {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-grow: 1; // Ocupa el espacio restante
+}
+
+.info-container {
+  .card-title {
+    margin: 0 0 8px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; // Puntos suspensivos si el nombre es muy largo
+  }
+
+  .info-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #666;
+    font-size: 0.9rem;
+  }
+}
+
+.card-footer {
+  margin-top: auto; // Empuja el footer hacia abajo si la tarjeta es alta
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+
+  .direccion {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #777;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+}
+
+// Estilo genérico para iconos pequeños de información
+.info-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #999;
+
+    &.location { color: #E91E63; } // Color diferente para el icono de ubicación
+}

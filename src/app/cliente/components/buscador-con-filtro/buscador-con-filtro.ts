@@ -24,15 +24,33 @@ export class BuscadorConFiltro implements OnInit {
   private restauranteService = inject(RestauranteService);
 
   // Emitimos el evento al padre para que él recargue la lista
-  @Output() filtrosCambiados = new EventEmitter<{nombre: string, etiqueta: string}>();
+  @Output() filtrosCambiados = new EventEmitter<{
+      nombre: string, 
+      etiqueta: string, 
+      soloPopulares: boolean 
+  }>();
 
   // Signals para el estado local
   etiquetas = signal<EtiquetaDTO[]>([]);
   tagSeleccionada = signal<string>(''); // Nombre de la etiqueta activa
   busquedaTexto = signal<string>('');
+  filtroPopularesActivo = signal<boolean>(false);
 
   ngOnInit() {
     this.cargarEtiquetas();
+  }
+
+  togglePopulares() {
+    const nuevoEstado = !this.filtroPopularesActivo();
+    this.filtroPopularesActivo.set(nuevoEstado);
+
+    // Si activamos populares, limpiamos los otros filtros para evitar mezclas raras
+    if (nuevoEstado) {
+      this.tagSeleccionada.set('');
+      this.busquedaTexto.set('');
+    }
+
+    this.emitirFiltros();
   }
 
   cargarEtiquetas() {
@@ -44,26 +62,30 @@ export class BuscadorConFiltro implements OnInit {
 
   // Se ejecuta al escribir en el input
   onSearchChange() {
+    if (this.busquedaTexto()) {
+        this.filtroPopularesActivo.set(false);
+    }
     this.emitirFiltros();
   }
 
   // Se ejecuta al hacer click en una tarjeta del carrusel
   seleccionarTag(nombreTag: string) {
+    this.filtroPopularesActivo.set(false); // Desactivar populares
+    
+    // Lógica existente de toggle tag
     if (this.tagSeleccionada() === nombreTag) {
-      // Si ya estaba seleccionada, la quitamos (toggle off) para quitar el filtro
       this.tagSeleccionada.set('');
     } else {
-      // Si no, la activamos
       this.tagSeleccionada.set(nombreTag);
     }
-    // Emitimos el cambio para que el padre filtre
     this.emitirFiltros();
   }
 
   private emitirFiltros() {
     this.filtrosCambiados.emit({
       nombre: this.busquedaTexto(),
-      etiqueta: this.tagSeleccionada()
+      etiqueta: this.tagSeleccionada(),
+      soloPopulares: this.filtroPopularesActivo()
     });
   }
 }

@@ -88,3 +88,53 @@
     span { color: #e65100; font-weight: bold; }
   }
 }
+.filtros-extra {
+  padding: 0 20px 10px 20px; /* Espaciado debajo del carrusel */
+  display: flex;
+  gap: 10px;
+}
+
+.filtro-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px; /* Borde redondeado tipo "píldora" */
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #555;
+  font-size: 0.9rem;
+  font-weight: 500;
+  user-select: none;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: #757575;
+  }
+
+  &:hover {
+    background-color: #f5f5f5;
+    border-color: #bdbdbd;
+  }
+
+  /* ESTADO ACTIVO (Cuando está seleccionado) */
+  &.active {
+    background-color: #FFF3E0; /* Fondo naranja suave */
+    border-color: #FF9800;
+    color: #E65100; /* Texto naranja fuerte */
+
+    mat-icon {
+      color: #FF9800;
+    }
+  }
+  
+  /* Estilo específico para populares */
+  &.popular {
+      /* Puedes darle un toque dorado o especial si quieres */
+      /* border-color: #FFD700; */
+  }
+}
