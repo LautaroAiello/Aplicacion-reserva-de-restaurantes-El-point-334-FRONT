@@ -112,3 +112,6 @@ table { width: 100%; }
   }
   span { font-weight: 500; color: #444; }
 }
+
+.etiqueta-manual { font-size: 0.75rem; color: #666; margin-left: 4px; }
+.cliente-manual { display: flex; align-items: center; gap: 4px; color: #2e7d32; } // Verde para manuales

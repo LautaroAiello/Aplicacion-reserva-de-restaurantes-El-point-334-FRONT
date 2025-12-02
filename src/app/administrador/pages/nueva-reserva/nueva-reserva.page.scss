@@ -1,0 +1,76 @@
+.nueva-reserva-container {
+  padding: 24px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+mat-card {
+  position: relative;
+  overflow: hidden;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+h3 {
+  margin: 0;
+  color: #3f51b5;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  mat-form-field { flex: 1; }
+}
+
+.full-width { width: 100%; }
+
+.hint { font-size: 0.9rem; color: #666; margin-bottom: 10px; }
+
+// Grid de Mesas
+.mesas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+  background: #f5f5f5;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.mesa-label {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.mesa-nombre { font-weight: 500; }
+.mesa-capacidad { font-size: 0.8rem; color: #666; }
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+}
+
+// Spinner overlay
+.loading-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(255,255,255,0.8);
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@media (max-width: 600px) {
+  .form-row { flex-direction: column; gap: 0; }
+}

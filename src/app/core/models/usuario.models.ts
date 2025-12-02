@@ -5,3 +5,11 @@ export interface UsuarioCreationDTO {
   password: string;
   telefono: string;
 }
+
+export interface GestorDTO {
+  id: number;
+  nombre: string;
+  apellido: string;
+  email: string;
+  telefono: string;
+}

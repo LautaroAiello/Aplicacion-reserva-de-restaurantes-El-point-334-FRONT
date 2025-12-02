@@ -5,8 +5,8 @@ export interface MesaDTO {
   id: number;
   descripcion: string;
   capacidad: number;
-  posicionX: number;
-  posicionY: number;
+  // posicionX: number;
+  // posicionY: number;
   bloqueada: boolean;
   // restauranteId no es necesario aquí, ya que la API la infiere de la URL
 }
@@ -15,7 +15,7 @@ export interface MesaDTO {
 export interface MesaCreateDTO {
   descripcion: string;
   capacidad: number;
-  posicionX: number;
-  posicionY: number;
+  // posicionX: number;
+  // posicionY: number;
   bloqueada: boolean;
 }

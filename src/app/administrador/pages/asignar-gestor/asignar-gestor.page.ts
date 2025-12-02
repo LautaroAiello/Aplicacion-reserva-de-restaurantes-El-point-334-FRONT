@@ -13,6 +13,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTableModule } from '@angular/material/table';
+import { GestorDTO } from '../../../core/models/usuario.models';
 
 @Component({
   selector: 'app-asignar-gestor-page',
@@ -20,7 +22,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   imports: [
     CommonModule, ReactiveFormsModule, MatCardModule, MatFormFieldModule,
     MatInputModule, MatButtonModule, MatSnackBarModule, MatIconModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule, MatTableModule
   ],
   templateUrl: './asignar-gestor.page.html',
   styleUrl: './asignar-gestor.page.scss',
@@ -41,6 +43,9 @@ export class AsignarGestorPage implements OnInit {
   protected cargando = signal<boolean>(false);
   protected hidePassword = signal<boolean>(true);
 
+  protected listaGestores = signal<GestorDTO[]>([]);
+  protected displayedColumns: string[] = ['nombre', 'email', 'telefono', 'acciones'];
+
   ngOnInit() {
     this.restauranteId = this.route.snapshot.paramMap.get('restauranteId')!;
     
@@ -55,6 +60,18 @@ export class AsignarGestorPage implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       telefono: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
+    });
+    this.cargarGestores();
+  }
+
+  cargarGestores() {
+    this.cargando.set(true);
+    this.restauranteService.listarGestores(this.restauranteId).subscribe({
+      next: (gestores) => {
+        this.listaGestores.set(gestores);
+        this.cargando.set(false);
+      },
+      error: () => this.cargando.set(false)
     });
   }
 
@@ -80,13 +97,33 @@ export class AsignarGestorPage implements OnInit {
           this.snackBar.open(respuestaTexto || 'Gestor asignado con éxito', 'Cerrar', {
             duration: 4000,
           });
+          this.gestorForm.reset();
+          this.cargarGestores();
           this.router.navigate(['/admin']);
         },
+        error: (err) => this.snackBar.open('Error al crear gestor', 'Cerrar')
       });
+  }
+
+  onEliminar(gestor: GestorDTO) {
+    if(!confirm(`¿Eliminar a ${gestor.nombre}?`)) return;
+    
+    this.cargando.set(true);
+    this.restauranteService.eliminarGestor(this.restauranteId, gestor.id).subscribe({
+      next: () => {
+        this.snackBar.open('Gestor eliminado.', 'OK', { duration: 3000 });
+        this.cargarGestores();
+      },
+      error: () => {
+        this.cargando.set(false);
+        this.snackBar.open('Error al eliminar.', 'Cerrar');
+      }
+    });
   }
 
   togglePassword(event: MouseEvent) {
     event.preventDefault();
     this.hidePassword.update(val => !val);
   }
+  volver() { this.router.navigate(['/admin']); }
 }

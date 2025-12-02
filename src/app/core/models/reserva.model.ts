@@ -18,6 +18,7 @@ export interface CrearReservaPayload {
   fechaHora: string; // "YYYY-MM-DDTHH:MM:SS"
   cantidadPersonas: number;
   tipo: string; // Ej: "NORMAL"
+  emailCliente?: string;
   observaciones?: string; // Opcional
   mesasReservadas: { mesaId: number }[];
 }

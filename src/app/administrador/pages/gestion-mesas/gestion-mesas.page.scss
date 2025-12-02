@@ -1,66 +1,105 @@
 .gestion-container {
   padding: 24px;
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* SIEMPRE en columna (uno abajo del otro) */
   gap: 24px;
+  max-width: 900px; /* Ancho máximo para que no se vea estirado en monitores grandes */
+  margin: 0 auto;   /* Centrado horizontalmente */
 }
 
-// Layout de 2 columnas en desktop
-@media (min-width: 960px) {
-  .gestion-container {
-    flex-direction: row;
-    align-items: flex-start;
+/* Eliminamos la regla @media que ponía flex-direction: row.
+   Ahora el comportamiento por defecto (columna) aplica a todos los dispositivos.
+*/
 
-    .form-card {
-      flex: 1 1 350px; // Crece pero tiene base de 350px
-      position: sticky; // Se queda fija al hacer scroll
-      top: 24px;
-    }
-    .tabla-card {
-      flex: 2 1 60%; // Ocupa el resto del espacio
-    }
-  }
-}
-
-// Estilos del formulario
+// --- Estilos del Formulario ---
 mat-card-content form {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
+
 .form-row {
   display: flex;
-  gap: 12px;
+  gap: 16px;
+  
   mat-form-field {
-    flex: 1;
+    flex: 1; // Para que ocupen el mismo ancho
   }
 }
+
+// En móviles, que los inputs de la fila se pongan uno abajo del otro
+@media (max-width: 600px) {
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
 mat-slide-toggle {
   margin: 10px 0;
 }
-button[mat-flat-button] {
-  padding: 10px 0;
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
 }
 
-// Estilos de la tabla
+button[mat-flat-button] {
+  padding: 10px 20px;
+}
+
+// --- Estilos de la Tabla ---
+.tabla-card {
+  width: 100%;
+}
+
 table {
   width: 100%;
 }
+
+// Estilos de estados
+.estado-bloqueada {
+  color: #f44336; // Rojo
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.estado-activa {
+  color: #4CAF50; // Verde
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
 .spinner-container {
   display: flex;
   justify-content: center;
-  padding: 40px 0;
+  padding: 30px;
 }
+
 .no-mesas {
   text-align: center;
-  padding: 20px;
+  padding: 30px;
   color: #666;
+  font-style: italic;
 }
-.estado-bloqueada {
-  color: #f44336;
-  font-weight: 500;
-}
-.estado-activa {
-  color: #4caf50;
-  font-weight: 500;
+
+// Mensaje de error (si lo usas)
+.error-message {
+  color: #d32f2f;
+  background-color: #ffebee;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
 }

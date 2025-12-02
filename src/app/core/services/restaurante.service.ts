@@ -15,17 +15,9 @@ import {
   PlatoDTO,
 } from '../models/platos.model';
 import { HttpParams } from '@angular/common/http';
-import {UsuarioCreationDTO} from '../models/usuario.models'
+import {GestorDTO, UsuarioCreationDTO} from '../models/usuario.models'
 
-// DTO para la SAGA 2 (Asignar Gestor)
-// (basado en el DTO de restaurant-service y la SAGA)
-export interface GestorCreationDTO {
-  nombre: string;
-  apellido: string;
-  email: string;
-  password: string;
-  telefono: string;
-}
+
 
 @Injectable({
   providedIn: 'root',
@@ -72,6 +64,19 @@ export class RestauranteService {
     );
   }
 
+  // Obtener lista de gestores
+  listarGestores(restauranteId: string): Observable<GestorDTO[]> {
+    return this.http.get<GestorDTO[]>(
+      `${this.apiUrl}/api/restaurant/restaurantes/${restauranteId}/gestores`
+    );
+  }
+
+  // Eliminar gestor (desvincular o borrar usuario)
+  eliminarGestor(restauranteId: string, gestorId: number): Observable<void> {
+    return this.http.delete<void>(
+      `${this.apiUrl}/api/restaurant/restaurantes/${restauranteId}/gestores/${gestorId}`
+    );
+  }
 
   // --- NUEVO MÉTODO (PUT) ---
   actualizarRestaurante(
@@ -84,19 +89,29 @@ export class RestauranteService {
     );
   }
 
-  getListarMesas(restauranteId: number): Observable<MesaDTO[]> {
+  getListarMesas(restauranteId: number | string): Observable<MesaDTO[]> {
     return this.http.get<MesaDTO[]>(
       `${this.apiUrl}/api/restaurant/restaurantes/${restauranteId}/mesas`
     );
   }
 
-  crearMesa(
-    restauranteId: number,
-    payload: MesaCreateDTO
-  ): Observable<MesaDTO> {
+  crearMesa(restauranteId: number | string, payload: MesaCreateDTO): Observable<MesaDTO> {
     return this.http.post<MesaDTO>(
       `${this.apiUrl}/api/restaurant/restaurantes/${restauranteId}/mesas`,
       payload
+    );
+  }
+
+  actualizarMesa(restauranteId: number | string, mesaId: number, payload: MesaCreateDTO): Observable<MesaDTO> {
+    return this.http.put<MesaDTO>(
+      `${this.apiUrl}/api/restaurant/restaurantes/${restauranteId}/mesas/${mesaId}`,
+      payload
+    );
+  }
+
+  eliminarMesa(restauranteId: number | string, mesaId: number): Observable<void> {
+    return this.http.delete<void>(
+      `${this.apiUrl}/api/restaurant/restaurantes/${restauranteId}/mesas/${mesaId}`
     );
   }
 

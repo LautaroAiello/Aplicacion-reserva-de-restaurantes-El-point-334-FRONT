@@ -41,7 +41,10 @@ export const adminRoutes: Routes = [
     // (Opcional) Aquí iría un Guard para verificar que el ADMIN
     // sea dueño de este :restauranteId específico.
   },
-  // (Aquí podríamos añadir más rutas de admin: /admin/ver-mesas, /admin/editar-menu, etc.)
+  {
+    path: 'reservas/nueva', 
+    loadComponent: () => import('./pages/nueva-reserva/nueva-reserva').then(c => c.AdminNuevaReservaPage),
+  },
   {
     path: '**',
     redirectTo: '', // Redirige /admin/loquesea a /admin

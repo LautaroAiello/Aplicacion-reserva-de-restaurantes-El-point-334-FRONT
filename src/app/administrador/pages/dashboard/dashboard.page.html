@@ -75,7 +75,22 @@
             <ng-container matColumnDef="cliente">
               <th mat-header-cell *matHeaderCellDef> Cliente </th>
               <td mat-cell *matCellDef="let row"> 
-                <strong>{{ row.nombreCliente }} {{ row.apellidoCliente }}</strong>
+                
+                <!-- Lógica de visualización -->
+                @if (row.observaciones?.includes('[Manual]')) {
+                  <!-- Es manual: Extraemos el nombre de la observación o mostramos un indicador -->
+                  <div class="cliente-manual">
+                    <mat-icon class="tiny-icon">person_pin</mat-icon>
+                    <strong>{{ extraerNombreManual(row.observaciones) }}</strong>
+                    <span class="etiqueta-manual">(Manual)</span>
+                  </div>
+                } @else {
+                  <!-- Es app: Mostramos usuario registrado -->
+                  <div class="cliente-app">
+                    <strong>{{ row.nombreCliente }} {{ row.apellidoCliente }}</strong>
+                  </div>
+                }
+
               </td>
             </ng-container>
 

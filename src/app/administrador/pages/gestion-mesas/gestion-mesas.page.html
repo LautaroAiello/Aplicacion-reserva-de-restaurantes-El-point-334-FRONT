@@ -1,102 +1,133 @@
 <div class="gestion-container">
   <h1>Gestión de Mesas</h1>
 
+  <!-- FORMULARIO -->
   <mat-card class="form-card">
     <mat-card-header>
-      <mat-card-title>Añadir Nueva Mesa</mat-card-title>
+      <!-- Título dinámico -->
+      <mat-card-title>
+        {{ mesaEditarId() ? 'Editar Mesa' : 'Añadir Nueva Mesa' }}
+      </mat-card-title>
     </mat-card-header>
+    
     <mat-card-content>
-      <form [formGroup]="mesaForm" (ngSubmit)="onCrearMesa()">
-        <mat-form-field appearance="outline">
-          <mat-label>Descripción (Ej: "Mesa 1", "Ventana Izq.")</mat-label>
-          <input matInput formControlName="descripcion" />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Capacidad (personas)</mat-label>
-          <input matInput formControlName="capacidad" type="number" min="1" />
-        </mat-form-field>
-
+      <form [formGroup]="mesaForm" (ngSubmit)="onGuardarMesa()">
+        
         <div class="form-row">
           <mat-form-field appearance="outline">
-            <mat-label>Posición X</mat-label>
-            <input matInput formControlName="posicionX" type="number" />
+            <mat-label>Descripción / Identificador</mat-label>
+            <input 
+              matInput 
+              formControlName="descripcion" 
+              placeholder="Ej: Mesa 1, Ventana, Barra..." 
+            />
+            <mat-error>Requerido</mat-error>
           </mat-form-field>
+  
           <mat-form-field appearance="outline">
-            <mat-label>Posición Y</mat-label>
-            <input matInput formControlName="posicionY" type="number" />
+            <mat-label>Capacidad (Sillas)</mat-label>
+            <input 
+              matInput 
+              formControlName="capacidad" 
+              type="number" 
+              min="1" 
+            />
+            <mat-error>Mínimo 1</mat-error>
           </mat-form-field>
         </div>
 
-        <mat-slide-toggle formControlName="bloqueada" color="warn">
-          Bloqueada (no disponible para reservas)
-        </mat-slide-toggle>
+        <!-- EL TOGGLE DE BLOQUEO YA NO ESTÁ AQUÍ -->
 
         @if (errorMessage()) {
-        <div class="error-message">{{ errorMessage() }}</div>
+          <div class="error-message">{{ errorMessage() }}</div>
         }
 
-        <button
-          mat-flat-button
-          color="primary"
-          type="submit"
-          [disabled]="mesaForm.invalid"
-        >
-          Crear Mesa
-        </button>
+        <div class="actions">
+          <!-- Botón Cancelar (solo si estamos editando) -->
+          @if (mesaEditarId()) {
+            <button mat-button type="button" (click)="onCancelarEdicion()">
+              Cancelar
+            </button>
+          }
+          
+          <button
+            mat-flat-button
+            color="primary"
+            type="submit"
+            [disabled]="mesaForm.invalid || cargando()"
+          >
+            {{ mesaEditarId() ? 'Guardar Cambios' : 'Crear Mesa' }}
+          </button>
+        </div>
       </form>
     </mat-card-content>
   </mat-card>
 
+  <!-- TABLA -->
   <mat-card class="tabla-card">
     <mat-card-header>
-      <mat-card-title>Mesas Actuales</mat-card-title>
+      <mat-card-title>Salón</mat-card-title>
     </mat-card-header>
+    
     <mat-card-content>
-      @if (cargando()) {
-      <div class="spinner-container">
-        <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
-      </div>
-      } @if (!cargando() && listaMesas().length > 0) {
-      <table mat-table [dataSource]="listaMesas()">
-        <ng-container matColumnDef="descripcion">
-          <th mat-header-cell *matHeaderCellDef>Descripción</th>
-          <td mat-cell *matCellDef="let mesa">{{mesa.descripcion}}</td>
-        </ng-container>
+      @if (cargando() && listaMesas().length === 0) {
+        <div class="spinner-container">
+          <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+        </div>
+      }
 
-        <ng-container matColumnDef="capacidad">
-          <th mat-header-cell *matHeaderCellDef>Capacidad</th>
-          <td mat-cell *matCellDef="let mesa">{{mesa.capacidad}} personas</td>
-        </ng-container>
+      @if (listaMesas().length > 0) {
+        <table mat-table [dataSource]="listaMesas()">
+          
+          <!-- Descripción -->
+          <ng-container matColumnDef="descripcion">
+            <th mat-header-cell *matHeaderCellDef>Descripción</th>
+            <td mat-cell *matCellDef="let mesa">
+              <strong>{{mesa.descripcion}}</strong>
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="bloqueada">
-          <th mat-header-cell *matHeaderCellDef>Estado</th>
-          <td mat-cell *matCellDef="let mesa">
-            @if (mesa.bloqueada) {
-            <span class="estado-bloqueada">Bloqueada</span>
-            } @else {
-            <span class="estado-activa">Activa</span>
-            }
-          </td>
-        </ng-container>
+          <!-- Capacidad -->
+          <ng-container matColumnDef="capacidad">
+            <th mat-header-cell *matHeaderCellDef>Capacidad</th>
+            <td mat-cell *matCellDef="let mesa">{{mesa.capacidad}} personas</td>
+          </ng-container>
 
-        <ng-container matColumnDef="acciones">
-          <th mat-header-cell *matHeaderCellDef>Acciones</th>
-          <td mat-cell *matCellDef="let mesa">
-            <button mat-icon-button color="primary">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button color="warn">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </td>
-        </ng-container>
+          <!-- Estado (INTERACTIVO) -->
+          <ng-container matColumnDef="bloqueada">
+            <th mat-header-cell *matHeaderCellDef>Estado</th>
+            <td mat-cell *matCellDef="let mesa">
+              <!-- Switch directo en la tabla -->
+              <mat-slide-toggle
+                [checked]="mesa.bloqueada"
+                (change)="onToggleBloqueo(mesa)"
+                color="warn"
+              >
+                {{ mesa.bloqueada ? 'Bloqueada' : 'Habilitada' }}
+              </mat-slide-toggle>
+            </td>
+          </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      </table>
-      } @if (!cargando() && listaMesas().length === 0) {
-      <p class="no-mesas">Aún no has añadido ninguna mesa.</p>
+          <!-- Acciones -->
+          <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <td mat-cell *matCellDef="let mesa">
+              <button mat-icon-button color="primary" (click)="onEditar(mesa)" title="Editar">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="onEliminar(mesa)" title="Eliminar">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      } 
+      
+      @if (!cargando() && listaMesas().length === 0) {
+        <p class="no-mesas">Aún no has añadido ninguna mesa.</p>
       }
     </mat-card-content>
   </mat-card>

@@ -75,4 +75,49 @@
       </form>
     </mat-card-content>
   </mat-card>
+
+  <!-- TARJETA 2: LISTA DE GESTORES (NUEVO) -->
+  <mat-card class="list-card">
+    <mat-card-header>
+      <mat-card-title>Equipo Actual</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      @if (listaGestores().length > 0) {
+        <table mat-table [dataSource]="listaGestores()">
+          <!-- Nombre -->
+          <ng-container matColumnDef="nombre">
+            <th mat-header-cell *matHeaderCellDef> Nombre </th>
+            <td mat-cell *matCellDef="let g"> {{g.nombre}} {{g.apellido}} </td>
+          </ng-container>
+
+          <!-- Email -->
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef> Email </th>
+            <td mat-cell *matCellDef="let g"> {{g.email}} </td>
+          </ng-container>
+
+          <!-- Telefono -->
+          <ng-container matColumnDef="telefono">
+            <th mat-header-cell *matHeaderCellDef> Teléfono </th>
+            <td mat-cell *matCellDef="let g"> {{g.telefono}} </td>
+          </ng-container>
+
+          <!-- Acciones -->
+          <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef> </th>
+            <td mat-cell *matCellDef="let g">
+              <button mat-icon-button color="warn" (click)="onEliminar(g)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      } @else {
+        <p class="no-data">No hay gestores asignados aún.</p>
+      }
+    </mat-card-content>
+  </mat-card>
 </div>

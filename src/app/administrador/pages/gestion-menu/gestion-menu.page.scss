@@ -1,26 +1,15 @@
-// (Usamos los mismos estilos que 'gestion-mesas')
 .gestion-container {
   padding: 24px;
   display: flex;
-  flex-direction: column; /* Siempre en columna (uno abajo del otro) */
-  gap: 24px;
-  max-width: 1000px; /* Ancho máximo para que no se estire demasiado */
+  flex-direction: column; /* SIEMPRE en columna */
+  gap: 32px; /* Espacio vertical entre el formulario y la tabla */
+  max-width: 1000px;
   margin: 0 auto;
 }
 
-@media (min-width: 960px) {
-  .gestion-container {
-    flex-direction: row;
-    align-items: flex-start;
-    .form-card {
-      flex: 1 1 350px;
-      position: sticky;
-      top: 24px;
-    }
-    .tabla-card {
-      flex: 2 1 60%;
-    }
-  }
+/* --- ESTILOS DEL FORMULARIO --- */
+.form-card {
+  width: 100%;
 }
 
 mat-card-content form {
@@ -28,57 +17,73 @@ mat-card-content form {
   flex-direction: column;
   gap: 12px;
 }
+
 .form-row {
   display: flex;
-  gap: 12px;
+  gap: 16px;
+  
   mat-form-field {
     flex: 1;
   }
 }
+
+// En celular, los inputs de la fila van uno abajo del otro
+@media (max-width: 600px) {
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
 button[mat-flat-button] {
   padding: 10px 0;
 }
-.plato-thumbnail {
-  width: 50px;
-  height: 50px;
-  object-fit: cover; // Recorta la imagen para que no se deforme
-  border-radius: 8px;
-  margin-right: 8px;
-  display: block;
-  background-color: #eee; // Color de fondo si no carga
+
+/* --- ESTILOS DE LA TABLA --- */
+.tabla-card {
+  width: 100%;
+  margin-bottom: 40px; // Margen extra abajo
 }
+
 table {
   width: 100%;
 }
+
+.plato-thumbnail {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-right: 8px;
+  display: block;
+  background-color: #eee;
+}
+
 .spinner-container {
   display: flex;
   justify-content: center;
   padding: 40px 0;
 }
+
 .no-items {
   text-align: center;
   padding: 20px;
   color: #666;
 }
 
-// Estados de platos
+// Estados
 td span.disponible {
-  color: #4caf50;
+  color: #4CAF50;
   font-weight: 500;
   background: #e8f5e9;
   padding: 4px 8px;
   border-radius: 4px;
 }
+
 td span.agotado {
   color: #f44336;
   font-weight: 500;
   background: #ffebee;
   padding: 4px 8px;
   border-radius: 4px;
-}
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 10px;
 }

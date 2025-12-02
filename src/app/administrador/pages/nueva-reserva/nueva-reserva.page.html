@@ -1,0 +1,104 @@
+<div class="nueva-reserva-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Nueva Reserva Manual</mat-card-title>
+      <mat-card-subtitle>Ingresa una reserva presencial o telefónica</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (cargando()) {
+        <div class="loading-overlay">
+          <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+        </div>
+      }
+
+      <form [formGroup]="reservaForm" (ngSubmit)="onSubmit()">
+        
+        <!-- 1. DATOS DEL CLIENTE -->
+        <h3>Datos del Cliente</h3>
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Nombre y Apellido</mat-label>
+            <input matInput formControlName="nombreCliente" placeholder="Ej: Juan Pérez">
+            <mat-error>Requerido</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Teléfono</mat-label>
+            <input matInput formControlName="telefonoCliente" type="tel">
+          </mat-form-field>
+        </div>
+
+        <!-- NUEVO: CAMPO EMAIL -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email del Cliente (Para confirmación)</mat-label>
+          <input matInput formControlName="emailCliente" type="email" placeholder="cliente@email.com">
+          <mat-error>Email requerido y válido</mat-error>
+        </mat-form-field>
+
+        <mat-divider></mat-divider>
+
+        <!-- 2. DATOS DE LA RESERVA -->
+        <h3>Detalles de Reserva</h3>
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="fecha">
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Hora</mat-label>
+            <mat-select formControlName="hora">
+              @for (h of horariosDisponibles(); track h) {
+                <mat-option [value]="h">{{h}} hs</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Personas</mat-label>
+            <input matInput type="number" formControlName="cantidadPersonas" min="1">
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Observaciones</mat-label>
+          <textarea matInput formControlName="observaciones" rows="2"></textarea>
+        </mat-form-field>
+
+        <mat-divider></mat-divider>
+
+        <!-- 3. SELECCIÓN DE MESA -->
+        <h3>Asignar Mesa</h3>
+        <p class="hint">Selecciona las mesas disponibles para este horario.</p>
+        
+        <div class="mesas-grid">
+          @for (mesa of mesasDisponibles(); track mesa.id) {
+            <mat-checkbox color="primary" (change)="onMesaChange(mesa.id, $event.checked)">
+              <div class="mesa-label">
+                <span class="mesa-nombre">{{ mesa.descripcion }}</span>
+                <span class="mesa-capacidad">({{ mesa.capacidad }} pers.)</span>
+              </div>
+            </mat-checkbox>
+          }
+        </div>
+        
+        @if (mesasDisponibles().length === 0) {
+          <p class="no-mesas">
+            No hay mesas disponibles en este horario (ocupadas o bloqueadas hoy).
+          </p>
+        }
+
+        <div class="actions">
+          <button mat-button type="button" (click)="cancelar()">Cancelar</button>
+          <button mat-flat-button color="primary" type="submit" [disabled]="reservaForm.invalid || cargando()">
+            Crear Reserva
+          </button>
+        </div>
+
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

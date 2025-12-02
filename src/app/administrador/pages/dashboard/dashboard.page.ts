@@ -105,6 +105,12 @@ export class AdminDashboardPage implements OnInit {
     });
   }
 
+  extraerNombreManual(obs: string): string {
+    if (!obs) return 'Cliente Manual';
+    // Intenta sacar el nombre después de "Cliente:"
+    const match = obs.match(/Cliente:\s*([^,]+)/);
+    return match ? match[1] : 'Cliente Manual';
+  }
   // --- ACCIONES ---
 
   gestionarReserva(reserva: ReservaAdminDTO, nuevoEstado: string) {
