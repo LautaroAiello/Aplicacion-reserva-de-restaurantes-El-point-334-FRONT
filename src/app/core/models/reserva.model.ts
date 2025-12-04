@@ -13,14 +13,14 @@ export interface DisponibilidadResponse {
 
 // Payload para crear la reserva (según tu resumen)
 export interface CrearReservaPayload {
-  usuarioId: string;
-  restauranteId: string;
+  usuarioId: number;
+  restauranteId: number;
   fechaHora: string; // "YYYY-MM-DDTHH:MM:SS"
   cantidadPersonas: number;
   tipo: string; // Ej: "NORMAL"
   emailCliente?: string;
   observaciones?: string; // Opcional
-  mesasReservadas: { mesaId: number }[];
+  mesaIds: number[];
 }
 export interface MisReservasResponse {
   id: string; // ID de la reserva

@@ -5,6 +5,7 @@ import {
   input,
   InputSignal,
   signal,
+  effect
 } from '@angular/core';
 import {
   FormBuilder,
@@ -13,13 +14,14 @@ import {
   FormGroup,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { catchError, throwError } from 'rxjs';
+import { Router } from '@angular/router';
+
 // Servicios
 import { ReservasService } from '../../../core/services/reservas.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { RestauranteService } from '../../../core/services/restaurante.service'; // <--- IMPORTAR
+import { RestauranteService } from '../../../core/services/restaurante.service';
 
-// Material Imports (Mismos que tenías)
+// Material Imports
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -28,13 +30,12 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
-// Modelos
-import { CrearReservaPayload } from '../../../core/models/reserva.model';
-import { MesaDTO } from '../../../core/models/mesa.model';
-
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { Router } from '@angular/router';
+
+// Modelos y Componentes
 import { ReservaExitosaDialog } from '../../../shared/reserva-exitosa-dialog/reserva-exitosa-dialog';
+import { MesaDTO } from '../../../core/models/mesa.model';
+import { CrearReservaPayload } from '../../../core/models/reserva.model';
 
 @Component({
   selector: 'app-formulario-reserva',
@@ -57,27 +58,31 @@ import { ReservaExitosaDialog } from '../../../shared/reserva-exitosa-dialog/res
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormularioReserva {
+  // Inputs (Vienen como string desde el router/html a veces)
   public restauranteId: InputSignal<string> = input.required<string>();
+  
+  public horarioApertura = input<string>('09:00'); 
+  public horarioCierre = input<string>('23:00');
 
   private fb = inject(FormBuilder);
   private reservasService = inject(ReservasService);
-  private restauranteService = inject(RestauranteService); // <--- INYECTAR
+  private restauranteService = inject(RestauranteService);
   private authService = inject(AuthService);
-
   private dialog = inject(MatDialog);
   private router = inject(Router);
 
-  protected estado = signal<'idle' | 'loading' | 'disponible' | 'error' | 'confirmada'>('idle');
+  // Estados
+  protected estado = signal<'loading' | 'disponible' | 'error' | 'confirmada'>('loading');
   protected errorMessage = signal<string | null>(null);
   
-  // --- NUEVOS SIGNALS PARA EL MAPA ---
+  // Datos
   protected mesas = signal<MesaDTO[]>([]); 
   protected mesasSeleccionadas = signal<Set<number>>(new Set());
-  // ----------------------------------
+  protected mesasOcupadasIds = signal<Set<number>>(new Set()); 
+  protected rangoHorarios = signal<string[]>([]);
 
   protected reservaForm: FormGroup;
-  protected horariosDisponibles = ['12:00', '13:00', '20:00', '21:00', '22:00'];
-  protected personas = [1, 2, 3, 4, 5, 6, 7, 8];
+  protected personas = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
 
   constructor() {
     this.reservaForm = this.fb.group({
@@ -85,125 +90,181 @@ export class FormularioReserva {
       hora: ['', Validators.required],
       cantidadPersonas: [null, Validators.required],
     });
+
+    // EFECTO 1: Cargar mesas (Convertimos string a number con +)
+    effect(() => {
+      const id = this.restauranteId();
+      if (id) {
+        this.cargarMesas(Number(id)); // Solución error: number not assignable to string
+      }
+    });
+
+    // EFECTO 2: Horarios
+    effect(() => {
+      this.generarRangoHorarios(this.horarioApertura(), this.horarioCierre());
+    });
   }
 
-  onConsultar() {
-    if (this.reservaForm.invalid) return;
+  cargarMesas(id: number) {
     this.estado.set('loading');
-    this.errorMessage.set(null);
-    // Limpiamos selección previa
-    this.mesasSeleccionadas.set(new Set()); 
+    this.restauranteService.getListarMesas(id).subscribe({
+      next: (mesasData) => {
+        this.mesas.set(mesasData);
+        this.estado.set('disponible');
+      },
+      error: (err) => {
+        console.error(err);
+        this.errorMessage.set('No se pudo cargar el mapa del restaurante.');
+        this.estado.set('error');
+      }
+    });
+  }
 
-    // 1. Primero consultamos disponibilidad general (tu lógica actual)
-    // NOTA: Idealmente, este endpoint debería devolver las mesas libres.
-    // Si no, llamamos a obtener las mesas del restaurante.
+  // Genera la lista estricta basada en apertura y cierre
+  private generarRangoHorarios(inicio: string, fin: string) {
+    // Protección: Si los datos no han llegado, no hacemos nada
+    if (!inicio || !fin) return;
+
+    // Aseguramos formato HH:mm (quitando segundos si vienen del backend: 18:00:00 -> 18:00)
+    const horaInicioStr = inicio.substring(0, 5);
+    const horaFinStr = fin.substring(0, 5);
+
+    const lista: string[] = [];
     
-    // Simulamos que la consulta de disponibilidad fue OK y traemos las mesas
-    this.restauranteService.getListarMesas(+this.restauranteId())
-      .pipe(
-        catchError((err) => {
-            this.errorMessage.set('No se pudo cargar el mapa del restaurante.');
-            this.estado.set('error');
-            return throwError(() => err);
-        })
-      )
-      .subscribe((mesasData) => {
-         // Filtramos mesas visualmente si queremos (opcional)
-         this.mesas.set(mesasData);
-         this.estado.set('disponible');
+    // Creamos fechas base para comparar (usamos una fecha arbitraria, ej: hoy)
+    const fechaBase = new Date();
+    fechaBase.setSeconds(0);
+    fechaBase.setMilliseconds(0);
+
+    const [hInicio, mInicio] = horaInicioStr.split(':').map(Number);
+    const [hFin, mFin] = horaFinStr.split(':').map(Number);
+
+    // Configuramos la fecha de INICIO
+    let fechaActual = new Date(fechaBase);
+    fechaActual.setHours(hInicio, mInicio, 0);
+
+    // Configuramos la fecha de CIERRE
+    let fechaLimite = new Date(fechaBase);
+    fechaLimite.setHours(hFin, mFin, 0);
+
+    // 💡 LÓGICA CLAVE: Si el cierre es menor al inicio (ej: Abre 20:00, Cierra 02:00)
+    // significa que cierra al día siguiente. Le sumamos 1 día a la fecha límite.
+    if (fechaLimite <= fechaActual) {
+      fechaLimite.setDate(fechaLimite.getDate() + 1);
+    }
+
+    // Bucle: Mientras la hora actual sea menor o igual al cierre
+    while (fechaActual <= fechaLimite) {
+      // Formateamos a String "HH:mm"
+      const horaString = fechaActual.toTimeString().substring(0, 5);
+      lista.push(horaString);
+
+      // Sumamos 30 minutos (o 60 si prefieres intervalos de 1 hora)
+      fechaActual.setMinutes(fechaActual.getMinutes() + 30);
+    }
+
+    console.log(`Horarios generados para ${horaInicioStr} - ${horaFinStr}:`, lista);
+    this.rangoHorarios.set(lista);
+  }
+
+  // --- VALIDACIÓN DE DISPONIBILIDAD ---
+  verificarDisponibilidad() {
+    const fecha = this.reservaForm.get('fecha')?.value;
+    const hora = this.reservaForm.get('hora')?.value;
+
+    if (!fecha || !hora) {
+      this.mesasOcupadasIds.set(new Set());
+      return;
+    }
+
+    const fechaISO = new Date(fecha).toISOString().split('T')[0];
+    const fechaHoraISO = `${fechaISO}T${hora}:00`;
+    
+    // Convertimos input string a number
+    const restIdNumber = Number(this.restauranteId()); 
+
+    this.reservasService.getMesasOcupadas(restIdNumber, fechaHoraISO)
+      .subscribe({
+        next: (idsOcupados: number[]) => { // Solución error: Implicit any
+          this.mesasOcupadasIds.set(new Set(idsOcupados));
+          
+          const seleccionadas = new Set(this.mesasSeleccionadas());
+          
+          // Solución error: Implicit any en el forEach
+          idsOcupados.forEach((id: number) => { 
+            if (seleccionadas.has(id)) {
+              seleccionadas.delete(id);
+            }
+          });
+          this.mesasSeleccionadas.set(seleccionadas);
+        },
+        error: () => console.error("Error verificando disponibilidad")
       });
   }
 
-  // --- Lógica para seleccionar mesas en el mapa ---
   toggleMesa(mesaId: number) {
+    if (this.mesasOcupadasIds().has(mesaId)) return;
+
     const seleccionActual = new Set(this.mesasSeleccionadas());
-    
-    if (seleccionActual.has(mesaId)) {
-      seleccionActual.delete(mesaId);
-    } else {
-      // Opcional: Validar si la suma de capacidades supera lo pedido
-      seleccionActual.add(mesaId);
-    }
+    if (seleccionActual.has(mesaId)) seleccionActual.delete(mesaId);
+    else seleccionActual.add(mesaId);
     
     this.mesasSeleccionadas.set(seleccionActual);
   }
 
   onConfirmarReserva() {
-    const usuarioId = this.authService.getUsuarioIdFromToken();
-    if (!usuarioId) {
+    const rawId = this.authService.getUsuarioIdFromToken();
+    if (!rawId) {
       this.errorMessage.set('Debe iniciar sesión para reservar.');
       this.estado.set('error');
       return;
     }
+    const usuarioId = Number(rawId);
 
-    // Validación visual: El usuario debe elegir al menos una mesa
     if (this.mesasSeleccionadas().size === 0) {
-        // Puedes usar un snackbar aquí mejor
-        alert("Por favor, selecciona una mesa en el mapa.");
-        return;
+       alert("Por favor, selecciona una mesa en el mapa.");
+       return;
     }
 
     this.estado.set('loading');
+    
     const formValue = this.reservaForm.value;
     const fechaISO = new Date(formValue.fecha!).toISOString().split('T')[0];
     const fechaHoraISO = `${fechaISO}T${formValue.hora}:00`;
+    const mesaIdsParaEnviar = Array.from(this.mesasSeleccionadas());
 
-    // Convertimos el Set de IDs al formato que espera el backend
-    const mesasParaEnviar = Array.from(this.mesasSeleccionadas()).map(id => ({ mesaId: id }));
-
-    const payload: CrearReservaPayload = {
+    // Aseguramos conversión de restauranteId a número
+    const payload: CrearReservaPayload = { 
       usuarioId: usuarioId,
-      restauranteId: this.restauranteId(),
+      restauranteId: Number(this.restauranteId()), // Solución error: string not assignable to number
       fechaHora: fechaHoraISO,
       cantidadPersonas: formValue.cantidadPersonas,
       tipo: 'NORMAL', 
-      mesasReservadas: mesasParaEnviar, // <--- ENVIAMOS LAS MESAS SELECCIONADAS
+      mesaIds: mesaIdsParaEnviar,
       observaciones: 'Reserva desde Web'
     };
 
-    this.reservasService.crearReserva(payload)
-      .pipe(
-        catchError((err) => {
-          // Manejo de errores del backend (ej: solapamiento, capacidad)
-          this.errorMessage.set(err.error?.message || 'No se pudo crear la reserva.');
-          this.estado.set('error'); // O volver a 'disponible' para que corrija
-          return throwError(() => err);
-        })
-      )
-      .subscribe({
+    this.reservasService.crearReserva(payload).subscribe({
         next: () => {
           this.estado.set('confirmada');
           this.abrirPopUpExito();
         },
         error: (err) => {
-          // Aquí capturas el mensaje "Conflicto de disponibilidad..."
-          const mensajeDelBack = err.error?.message || 'Error desconocido al reservar.';
-    
-          this.errorMessage.set(mensajeDelBack); 
-          this.estado.set('error'); // Esto mostrará el div de error en tu HTML
+          const mensajeError = err.error?.message || 'Error al reservar.';
+          this.errorMessage.set(mensajeError);
+          this.estado.set('error');
         }
       });
-      // .subscribe(() => {
-      //   this.estado.set('confirmada');
-      //   this.abrirPopUpExito();
-      // });
   }
 
   abrirPopUpExito() {
-      const dialogRef = this.dialog.open(ReservaExitosaDialog, {  
-      width: '400px',
-      disableClose: true // Obliga a pulsar el botón para cerrar
-      });
-    
-      dialogRef.afterClosed().subscribe(() => {
-        // Cuando el usuario cierra el popup, lo redirigimos
-        this.router.navigate(['/home']); 
-        // Opcional: ir a 'mis-reservas'
-      });
+      const dialogRef = this.dialog.open(ReservaExitosaDialog, { width: '400px', disableClose: true });
+      dialogRef.afterClosed().subscribe(() => this.router.navigate(['/home']));
   }
 
   resetForm() {
-    this.estado.set('idle');
+    this.estado.set('disponible');
     this.mesasSeleccionadas.set(new Set());
+    this.errorMessage.set(null);
   }
 }

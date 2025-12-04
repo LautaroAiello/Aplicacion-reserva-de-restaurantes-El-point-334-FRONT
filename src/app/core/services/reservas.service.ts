@@ -56,5 +56,11 @@ export class ReservasService {
     return this.http.put(`${this.apiUrl}/api/reserva/reservas/${id}`, { estado: nuevoEstado });
   }
 
+  getMesasOcupadas(restauranteId: number, fechaHora: string): Observable<number[]> {
+    return this.http.get<number[]>(
+      `${this.apiUrl}/api/reserva/reservas/mesas-ocupadas?restauranteId=${restauranteId}&fechaHora=${fechaHora}`
+    );
+  }
+
   // (Aquí también podrías tener 'cancelarReserva()', etc.)
 }

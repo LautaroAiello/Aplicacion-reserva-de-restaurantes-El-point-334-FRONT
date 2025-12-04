@@ -1,97 +1,121 @@
 @if (estado() === 'loading') {
 <div class="estado-container">
   <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
-  <p>Procesando...</p>
+  <p>Cargando disponibilidad...</p>
 </div>
-} @if (estado() === 'error' && errorMessage()) {
-<div class="estado-container error">
-  <mat-icon>warning</mat-icon>
-  <p>{{ errorMessage() }}</p>
-  <button mat-stroked-button (click)="resetForm()">Intentar de nuevo</button>
-</div>
-} @if (estado() === 'confirmada') {
+} 
+
+@else if (estado() === 'confirmada') {
 <div class="estado-container confirmada">
-  <mat-icon>check_circle</mat-icon>
+  <div class="icon-circle"><mat-icon>check</mat-icon></div>
   <h2>¡Reserva Confirmada!</h2>
-  <p>Recibirás un email con los detalles.</p>
+  <p>Te esperamos el {{ reservaForm.value.fecha | date:'dd/MM' }} a las {{ reservaForm.value.hora }} hs.</p>
+  <button mat-stroked-button (click)="resetForm()">Hacer otra reserva</button>
 </div>
-} @if (estado() === 'idle') {
+} 
+
+@else if (estado() === 'error') {
+<div class="estado-container error">
+  <mat-icon class="error-icon">error_outline</mat-icon>
+  <h3>Hubo un problema</h3>
+  <p>{{ errorMessage() }}</p>
+  <button mat-flat-button color="primary" (click)="estado.set('disponible')">Volver</button>
+</div>
+} 
+
+@else {
 <form [formGroup]="reservaForm" class="reserva-form">
+  
+  <h3>Datos de la Reserva</h3>
+
   <mat-form-field appearance="outline">
     <mat-label>Fecha</mat-label>
-    <input matInput [matDatepicker]="picker" formControlName="fecha" />
+    <input 
+      matInput 
+      [matDatepicker]="picker" 
+      formControlName="fecha"
+      (dateChange)="verificarDisponibilidad()" 
+      readonly
+    >
     <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
     <mat-datepicker #picker></mat-datepicker>
   </mat-form-field>
 
   <div class="form-row">
+    
     <mat-form-field appearance="outline">
       <mat-label>Hora</mat-label>
-      <mat-select formControlName="hora">
-        @for (hora of horariosDisponibles; track hora) {
-        <mat-option [value]="hora">{{ hora }}</mat-option>
+      <mat-select formControlName="hora" (selectionChange)="verificarDisponibilidad()">
+        @for (hora of rangoHorarios(); track hora) {
+          <mat-option [value]="hora">{{ hora }}</mat-option>
         }
       </mat-select>
+      @if (reservaForm.get('hora')?.hasError('required')) {
+        <mat-error>Selecciona un horario</mat-error>
+      }
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Personas</mat-label>
       <mat-select formControlName="cantidadPersonas">
         @for (p of personas; track p) {
-        <mat-option [value]="p"
-          >{{ p }} {{ p === 1 ? 'persona' : 'personas' }}</mat-option
-        >
+          <mat-option [value]="p">{{ p }} p.</mat-option>
         }
       </mat-select>
     </mat-form-field>
   </div>
 
-  <button mat-flat-button color="primary" (click)="onConsultar()">
-    Consultar Disponibilidad
-  </button>
-</form>
-}
-@if (estado() === 'disponible') {
-<div class="estado-container mapa-layout">
-  <div class="mapa-header">
-    <h4>Selecciona tu mesa</h4>
-    <p class="info-texto">
-      <mat-icon class="small-icon">info</mat-icon>
-      Personas: {{ reservaForm.value.cantidadPersonas }} | Fecha: {{ reservaForm.value.fecha | date:'dd/MM' }} {{ reservaForm.value.hora }}hs
-    </p>
-  </div>
-
-  <div class="mesas-grid">
-    @for (mesa of mesas(); track mesa.id) {
-      <div 
-        class="mesa-item" 
-        [class.selected]="mesasSeleccionadas().has(mesa.id)"
-        [class.bloqueada]="mesa.bloqueada"
-        (click)="!mesa.bloqueada && toggleMesa(mesa.id)"
-      >
-        <mat-icon>table_restaurant</mat-icon>
-        <span class="mesa-nombre">{{ mesa.descripcion || 'Mesa ' + mesa.id }}</span>
-        <span class="mesa-capacidad">cap: {{ mesa.capacidad }}</span>
-        
-        @if (mesasSeleccionadas().has(mesa.id)) {
-          <div class="check-badge">
-            <mat-icon>check</mat-icon>
-          </div>
-        }
-      </div>
+  <div class="seccion-mapa">
+    
+    @if (!reservaForm.get('hora')?.value) {
+      <p class="aviso-horario">👈 Selecciona fecha y hora para ver qué mesas están libres</p>
     }
+
+    <div class="mesas-grid" [class.disabled-grid]="!reservaForm.get('hora')?.value">
+      
+      @for (mesa of mesas(); track mesa.id) {
+        @let isOcupada = mesasOcupadasIds().has(mesa.id);
+
+        <div 
+          class="mesa-item" 
+          [class.selected]="mesasSeleccionadas().has(mesa.id)"
+          [class.bloqueada]="mesa.bloqueada"
+          [class.ocupada]="isOcupada"
+          (click)="!mesa.bloqueada && !isOcupada && toggleMesa(mesa.id)"
+        >
+          <mat-icon>table_restaurant</mat-icon>
+          <span class="mesa-nombre">{{ mesa.descripcion || 'Mesa ' + mesa.id }}</span>
+          <small>Cap: {{ mesa.capacidad }}</small>
+          
+          @if (mesasSeleccionadas().has(mesa.id)) {
+            <div class="check-badge"><mat-icon>check</mat-icon></div>
+          }
+
+          @if (isOcupada) {
+            <div class="ocupada-badge">OCUPADA</div>
+          }
+        </div>  
+      } @empty {
+        <p class="no-data">Cargando mapa del restaurante...</p>
+      }
+    </div>
+    
+    <mat-error *ngIf="mesasSeleccionadas().size === 0 && reservaForm.touched" style="font-size: 0.8rem; margin-top: 5px;">
+      * Debes seleccionar al menos una mesa
+    </mat-error>
   </div>
 
-  <div class="actions-bar">
-    <button mat-button (click)="resetForm()">Atrás</button>
+  <div class="actions">
     <button 
-        mat-flat-button 
-        color="primary" 
-        (click)="onConfirmarReserva()"
-        [disabled]="mesasSeleccionadas().size === 0"
+      mat-flat-button 
+      color="primary" 
+      class="btn-block"
+      (click)="onConfirmarReserva()"
+      [disabled]="reservaForm.invalid || mesasSeleccionadas().size === 0"
     >
-      Confirmar ({{ mesasSeleccionadas().size }})
+      Confirmar Reserva ({{ mesasSeleccionadas().size }} mesas)
     </button>
   </div>
-</div>
+
+</form>
 }

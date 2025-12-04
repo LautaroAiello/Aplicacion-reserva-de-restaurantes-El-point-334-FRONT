@@ -199,7 +199,7 @@ export class AdminNuevaReservaPage implements OnInit {
     }
   }
 
-  onSubmit() {
+onSubmit() {
     if (this.reservaForm.invalid) {
       if (this.reservaForm.get('mesasSeleccionadas')?.invalid) {
         this.snackBar.open('Debes seleccionar al menos una mesa.', 'Cerrar');
@@ -213,28 +213,28 @@ export class AdminNuevaReservaPage implements OnInit {
     const fechaISO = new Date(formValue.fecha).toISOString().split('T')[0];
     const fechaHoraISO = `${fechaISO}T${formValue.hora}:00`;
 
-    // Incluimos Email en observación
-    const datosCliente = `[Manual] Cliente: ${formValue.nombreCliente}, Email: ${formValue.emailCliente}, Tel: ${formValue.telefonoCliente}. `;
-    const obsFinal = datosCliente + (formValue.observaciones || '');
-
     const adminId = this.authService.getUsuarioIdFromToken();
     
-    // Mapeo de mesas
-    const mesasParaEnviar = formValue.mesasSeleccionadas.map((id: number) => ({ mesaId: id }));
+    // 💡 CAMBIO PRINCIPAL: Ya no mapeamos a objetos {mesaId: id}.
+    // Asumimos que formValue.mesasSeleccionadas ya es un array de números [1, 5, ...]
+    // Si viene como strings, podrías necesitar un .map(id => Number(id))
+    const listaDeIds: number[] = formValue.mesasSeleccionadas;
 
     const payload: CrearReservaPayload = {
-      usuarioId: adminId!, 
-      restauranteId: this.restauranteId,
+      // Conversión explícita a Number para evitar error de tipos
+      usuarioId: Number(adminId), 
+      restauranteId: Number(this.restauranteId),
+      
       fechaHora: fechaHoraISO,
       cantidadPersonas: formValue.cantidadPersonas,
       tipo: 'MANUAL',
       
-      // AHORA LO MANDAMOS EN SU PROPIO CAMPO (Asegúrate de agregar esto a la interfaz CrearReservaPayload en el servicio también)
-      emailCliente: formValue.emailCliente, 
+      // 💡 AHORA USAMOS 'mesaIds' (Array simple de números)
+      mesaIds: listaDeIds, 
       
-      // Las observaciones van limpias, sin datos ocultos
-      observaciones: formValue.observaciones, 
-      mesasReservadas: mesasParaEnviar
+      // Datos opcionales
+      emailCliente: formValue.emailCliente, 
+      observaciones: formValue.observaciones
     };
 
     this.reservasService.crearReserva(payload)
@@ -248,9 +248,10 @@ export class AdminNuevaReservaPage implements OnInit {
       )
       .subscribe(() => {
         this.snackBar.open('¡Reserva manual creada!', 'OK', { duration: 3000 });
-        this.router.navigate(['/admin']);
+        // Redirigir a donde corresponda (ej: dashboard o calendario)
+        // this.router.navigate(['/admin/reservas']); 
       });
-  }
+}
 
   cancelar() { this.router.navigate(['/admin']); }
 }
