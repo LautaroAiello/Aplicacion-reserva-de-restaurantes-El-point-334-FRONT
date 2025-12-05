@@ -214,9 +214,9 @@ export class AdminNuevaReservaPage implements OnInit {
     const fechaHoraISO = `${fechaISO}T${formValue.hora}:00`;
 
     // Incluimos Email en observación
-    const datosCliente = `[Manual] Cliente: ${formValue.nombreCliente}, Email: ${formValue.emailCliente}, Tel: ${formValue.telefonoCliente}. `;
-    const obsFinal = datosCliente + (formValue.observaciones || '');
-
+    // const datosCliente = `[Manual] Cliente: ${formValue.nombreCliente}, Email: ${formValue.emailCliente}, Tel: ${formValue.telefonoCliente}. `;
+    // const obsFinal = datosCliente + (formValue.observaciones || '');
+    const obsFinal = formValue.observaciones || '';
     const adminId = this.authService.getUsuarioIdFromToken();
     
     // Mapeo de mesas
@@ -230,10 +230,11 @@ export class AdminNuevaReservaPage implements OnInit {
       tipo: 'MANUAL',
       
       // AHORA LO MANDAMOS EN SU PROPIO CAMPO (Asegúrate de agregar esto a la interfaz CrearReservaPayload en el servicio también)
-      emailCliente: formValue.emailCliente, 
+      nombreClienteManual: formValue.nombreCliente, // Enviamos el nombre aquí
+      emailCliente: formValue.emailCliente,
       
       // Las observaciones van limpias, sin datos ocultos
-      observaciones: formValue.observaciones, 
+      observaciones: obsFinal, 
       mesasReservadas: mesasParaEnviar
     };
 

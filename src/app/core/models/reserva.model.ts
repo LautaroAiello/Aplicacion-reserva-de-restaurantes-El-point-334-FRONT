@@ -19,6 +19,7 @@ export interface CrearReservaPayload {
   cantidadPersonas: number;
   tipo: string; // Ej: "NORMAL"
   emailCliente?: string;
+  nombreClienteManual?: string;
   observaciones?: string; // Opcional
   mesasReservadas: { mesaId: number }[];
 }
@@ -42,4 +43,5 @@ export interface ReservaAdminDTO {
   nombreCliente: string;
   apellidoCliente: string;
   mesasIds: number[];
+  tipo: string;
 }

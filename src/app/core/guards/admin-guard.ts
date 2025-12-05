@@ -14,13 +14,11 @@ export const adminGuard: CanActivateFn = (route, state) => {
   }
 
   // 2. ¿Es ADMIN?
-  if (authService.hasRole('ADMIN')) {
-    return true; // <-- ¡Sí! Puede pasar.
+  if (authService.hasRole('ADMIN') || authService.isGestor()) {
+    return true;
   }
 
-  // 3. Está logueado, pero NO es ADMIN
-  console.error('AdminGuard: Acceso denegado. No tiene rol ADMIN.');
   // Lo mandamos al login de admin (o podrías mandarlo al home de cliente)
-  router.navigate(['/admin/login']);
+  router.navigate(['/login']);
   return false;
 };

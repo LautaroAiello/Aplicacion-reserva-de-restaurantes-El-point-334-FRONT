@@ -66,14 +66,12 @@ export class AdministradorLoginPage {
       )
       .subscribe({
         next: (response) => {
-          if (this.authService.hasRole('ADMIN')) {
-            this.router.navigate(['/admin']); // Redirigir al dashboard
-          } else {
-            this.errorMessage.set(
-              'Acceso denegado. No tienes permisos de administrador.'
-            );
-            this.authService.logout(); // Cerramos su sesión
-          }
+          if (this.authService.hasRole('ADMIN') || this.authService.isGestor()) {
+          this.router.navigate(['/admin']);
+        } else {
+          this.errorMessage.set('Acceso denegado. No eres administrador ni gestor.');
+          this.authService.logout();
+        }
         },
       });
   }
