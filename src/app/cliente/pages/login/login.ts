@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -42,7 +42,7 @@ export class ClienteLoginPage {
   private router = inject(Router);
 
   protected loginForm: FormGroup;
-  protected errorMessage: string | null = null;
+  protected errorMessage = signal<string | null>(null);
 
   constructor() {
     this.loginForm = this.fb.group({
@@ -58,25 +58,32 @@ export class ClienteLoginPage {
       return;
     }
 
-    this.errorMessage = null; // Limpiar errores previos
+    this.errorMessage.set(null); // Limpiar errores previos
 
-    this.authService
-      .login(this.loginForm.value)
-      .pipe(
-        catchError((err) => {
-          // Manejo de error
-          console.error('Error en el login:', err);
-          this.errorMessage =
-            'Email o contraseña incorrectos. Por favor, intente de nuevo.';
-          return throwError(() => err); // Propaga el error
-        })
-      )
-      .subscribe({
-        next: (response) => {
-          // ¡Éxito!
-          console.log('Login exitoso', response.token);
-          this.router.navigate(['/home']); // Redirigir al home
-        },
-      });
+    this.authService.login(this.loginForm.value).pipe(
+      catchError((err) => {
+        console.error('Error en el login:', err);
+        // Mensaje amigable si falla
+        if (err.status === 401 || err.status === 403) {
+            this.errorMessage.set('Email o contraseña incorrectos.');
+        } else {
+            this.errorMessage.set('Error de conexión. Intente más tarde.');
+        }
+        return throwError(() => err);
+      })
+    ).subscribe({
+      next: (response) => {
+        console.log('Login exitoso', response);
+        
+        // --- LÓGICA DE REDIRECCIÓN INTELIGENTE ---
+        // Si por error un Admin/Gestor se loguea aquí, lo mandamos a su panel
+        if (this.authService.hasRole('ADMIN') || this.authService.isGestor()) {
+           this.router.navigate(['/admin']);
+        } else {
+           // Cliente normal -> Home
+           this.router.navigate(['/home']);
+        }
+      }
+    });
   }
 }

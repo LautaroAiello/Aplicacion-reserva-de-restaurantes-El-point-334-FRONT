@@ -45,6 +45,10 @@ export const adminRoutes: Routes = [
     path: 'reservas/nueva', 
     loadComponent: () => import('./pages/nueva-reserva/nueva-reserva').then(c => c.AdminNuevaReservaPage),
   },
+   {
+    path: 'reservas/listado/:estado', 
+    loadComponent: () => import('./pages/historial-reservas/historial-reservas.page').then(c => c.HistorialReservasPage),
+  },
   {
     path: '**',
     redirectTo: '', // Redirige /admin/loquesea a /admin

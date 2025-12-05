@@ -59,20 +59,30 @@ export class GestionMesasPage implements OnInit {
   protected errorMessage = signal<string | null>(null);
   protected cargando = signal<boolean>(true);
 
+  // Signal para control de roles
+  protected esAdmin = signal<boolean>(false);
+
   // Lista de mesas y columnas
   protected listaMesas = signal<MesaDTO[]>([]);
-  protected displayedColumns: string[] = [
-    'descripcion',
-    'capacidad',
-    'bloqueada', // Esta columna ahora tendrá el switch
-    'acciones',
-  ];
+  protected displayedColumns: string[] = []; // Se define en ngOnInit según el rol
 
   // Estado de edición (null = modo crear)
   protected mesaEditarId = signal<number | null>(null);
   private restauranteId!: number;
 
   ngOnInit() {
+    // 1. Determinar rol
+    this.esAdmin.set(this.authService.hasRole('ADMIN'));
+
+    // 2. Definir columnas de la tabla según rol
+    if (this.esAdmin()) {
+      this.displayedColumns = ['descripcion', 'capacidad', 'bloqueada', 'acciones'];
+    } else {
+      // El Gestor no ve acciones de editar/borrar, pero sí ve 'bloqueada' para usar el switch
+      this.displayedColumns = ['descripcion', 'capacidad', 'bloqueada'];
+    }
+
+    // 3. Obtener ID del restaurante
     const roles = this.authService.getRestauranteRoles();
     const miRestaurante = roles.find(
       (r) => r.rol === 'ADMIN' || r.rol === 'GESTOR'
@@ -85,12 +95,13 @@ export class GestionMesasPage implements OnInit {
     }
     this.restauranteId = miRestaurante.restauranteId;
 
-    // Formulario simplificado (Sin X, Y, ni Bloqueada)
+    // 4. Inicializar Formulario (Solo lo usará el Admin, pero lo inicializamos igual para evitar errores)
     this.mesaForm = this.fb.group({
       descripcion: ['', Validators.required],
       capacidad: [2, [Validators.required, Validators.min(1)]],
     });
 
+    // 5. Cargar datos
     this.cargarMesas();
   }
 
@@ -108,26 +119,29 @@ export class GestionMesasPage implements OnInit {
     });
   }
 
-  // Guardar (Crear o Editar)
+  // --- LÓGICA DE ADMIN (Crear / Editar / Borrar) ---
+
   onGuardarMesa() {
-    if (this.mesaForm.invalid) return;
+    if (!this.esAdmin() || this.mesaForm.invalid) return;
+    
     this.errorMessage.set(null);
     this.cargando.set(true);
 
-    const formValue = this.mesaForm.value;
+    // Recuperamos el estado actual de bloqueo si estamos editando, para no perderlo
+    let bloqueadaActual = false;
+    if (this.mesaEditarId()) {
+        const mesaOriginal = this.listaMesas().find(m => m.id === this.mesaEditarId());
+        if (mesaOriginal) bloqueadaActual = mesaOriginal.bloqueada;
+    }
+
+    const payload: MesaCreateDTO = {
+        descripcion: this.mesaForm.value.descripcion,
+        capacidad: this.mesaForm.value.capacidad,
+        bloqueada: bloqueadaActual // Mantenemos el estado
+    };
 
     if (this.mesaEditarId()) {
-      // --- MODO EDICIÓN ---
-      // Buscamos la mesa original para mantener su estado de bloqueo (ya que no está en el form)
-      const mesaOriginal = this.listaMesas().find(m => m.id === this.mesaEditarId());
-      const estadoBloqueoActual = mesaOriginal ? mesaOriginal.bloqueada : false;
-
-      const payload: MesaCreateDTO = {
-        descripcion: formValue.descripcion,
-        capacidad: formValue.capacidad,
-        bloqueada: estadoBloqueoActual // Mantenemos el estado que tenía
-      };
-
+      // EDITAR
       this.restauranteService
         .actualizarMesa(this.restauranteId, this.mesaEditarId()!, payload)
         .pipe(
@@ -147,13 +161,7 @@ export class GestionMesasPage implements OnInit {
           this.onCancelarEdicion();
         });
     } else {
-      // --- MODO CREACIÓN ---
-      const payload: MesaCreateDTO = {
-        descripcion: formValue.descripcion,
-        capacidad: formValue.capacidad,
-        bloqueada: false // Por defecto nace desbloqueada
-      };
-
+      // CREAR
       this.restauranteService
         .crearMesa(this.restauranteId, payload)
         .pipe(
@@ -175,13 +183,12 @@ export class GestionMesasPage implements OnInit {
     }
   }
 
-  // Cargar datos en el formulario para editar
   onEditar(mesa: MesaDTO) {
+    if (!this.esAdmin()) return;
     this.mesaEditarId.set(mesa.id);
     this.mesaForm.patchValue({
       descripcion: mesa.descripcion,
-      capacidad: mesa.capacidad
-      // No tocamos 'bloqueada' aquí
+      capacidad: mesa.capacidad,
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -192,6 +199,7 @@ export class GestionMesasPage implements OnInit {
   }
 
   onEliminar(mesa: MesaDTO) {
+    if (!this.esAdmin()) return;
     if (!confirm(`¿Eliminar la mesa "${mesa.descripcion}"?`)) return;
 
     this.cargando.set(true);
@@ -209,23 +217,21 @@ export class GestionMesasPage implements OnInit {
       });
   }
 
-  // --- NUEVO: Acción rápida desde la tabla ---
+  // --- LÓGICA COMPARTIDA (Admin y Gestor) ---
+
   onToggleBloqueo(mesa: MesaDTO) {
-    // 1. Invertimos el estado
+    // Invertimos el estado
     const nuevoEstado = !mesa.bloqueada;
     
-    // 2. Preparamos el payload con los mismos datos que ya tenía, solo cambiando el bloqueo
     const payload: MesaCreateDTO = {
         descripcion: mesa.descripcion,
         capacidad: mesa.capacidad,
         bloqueada: nuevoEstado
     };
 
-    // 3. Llamamos al servicio
     this.restauranteService.actualizarMesa(this.restauranteId, mesa.id, payload)
         .subscribe({
             next: (mesaActualizada) => {
-                // Actualizamos la lista localmente
                 this.listaMesas.update(mesas => 
                     mesas.map(m => m.id === mesaActualizada.id ? mesaActualizada : m)
                 );
@@ -233,9 +239,9 @@ export class GestionMesasPage implements OnInit {
                 this.snackBar.open(mensaje, 'OK', { duration: 2000 });
             },
             error: () => {
-                // Si falla, revertimos visualmente el switch (opcional, o recargamos lista)
                 this.snackBar.open('Error al cambiar estado', 'Cerrar');
-                this.cargarMesas(); // Recarga forzada para asegurar consistencia
+                // Revertimos visualmente recargando la lista original
+                this.cargarMesas();
             }
         });
   }

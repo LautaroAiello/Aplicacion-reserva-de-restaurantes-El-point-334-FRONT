@@ -213,6 +213,10 @@ onSubmit() {
     const fechaISO = new Date(formValue.fecha).toISOString().split('T')[0];
     const fechaHoraISO = `${fechaISO}T${formValue.hora}:00`;
 
+    // Incluimos Email en observación
+    // const datosCliente = `[Manual] Cliente: ${formValue.nombreCliente}, Email: ${formValue.emailCliente}, Tel: ${formValue.telefonoCliente}. `;
+    // const obsFinal = datosCliente + (formValue.observaciones || '');
+    const obsFinal = formValue.observaciones || '';
     const adminId = this.authService.getUsuarioIdFromToken();
     
     // 💡 CAMBIO PRINCIPAL: Ya no mapeamos a objetos {mesaId: id}.
@@ -229,12 +233,13 @@ onSubmit() {
       cantidadPersonas: formValue.cantidadPersonas,
       tipo: 'MANUAL',
       
-      // 💡 AHORA USAMOS 'mesaIds' (Array simple de números)
-      mesaIds: listaDeIds, 
+      // AHORA LO MANDAMOS EN SU PROPIO CAMPO (Asegúrate de agregar esto a la interfaz CrearReservaPayload en el servicio también)
+      nombreClienteManual: formValue.nombreCliente, // Enviamos el nombre aquí
+      emailCliente: formValue.emailCliente,
       
-      // Datos opcionales
-      emailCliente: formValue.emailCliente, 
-      observaciones: formValue.observaciones
+      // Las observaciones van limpias, sin datos ocultos
+      observaciones: obsFinal, 
+      mesasReservadas: mesasParaEnviar
     };
 
     this.reservasService.crearReserva(payload)

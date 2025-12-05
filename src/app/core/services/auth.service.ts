@@ -173,4 +173,8 @@ export class AuthService {
       (r) => r.restauranteId === idNum && r.rol === rol
     );
   }
+
+   isGestor(): boolean {
+    return this.getRestauranteRoles().some(r => r.rol === 'GESTOR');
+  }
 }
