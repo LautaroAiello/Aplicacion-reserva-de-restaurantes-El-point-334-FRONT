@@ -9,6 +9,9 @@ import { ReservasService } from '../../../core/services/reservas.service';
 import { RestauranteService } from '../../../core/services/restaurante.service';
 import { AuthService } from '../../../core/services/auth.service';
 
+// Modelos
+import { CrearReservaPayload, ReservaAdminDTO } from '../../../core/models/reserva.model';
+
 // Material
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -21,9 +24,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatDividerModule } from '@angular/material/divider'; // Asegúrate de importar esto si usas mat-divider
+import { MatDividerModule } from '@angular/material/divider';
 import { MesaDTO } from '../../../core/models/mesa.model';
-import { CrearReservaPayload, ReservaAdminDTO } from '../../../core/models/reserva.model';
 import { RestauranteDTO } from '../../../core/models/restaurante.model';
 
 @Component({
@@ -53,7 +55,7 @@ export class AdminNuevaReservaPage implements OnInit {
   protected restauranteId!: string;
   protected horariosDisponibles = signal<string[]>([]);
   
-  // Cache para lógica local
+  // Cache local
   private todasLasMesasCache: MesaDTO[] = [];
   private reservasExistentes: ReservaAdminDTO[] = []; 
 
@@ -68,28 +70,25 @@ export class AdminNuevaReservaPage implements OnInit {
     }
     this.restauranteId = miRestaurante.restauranteId.toString();
 
-    // 2. Inicializar Formulario (AHORA CON emailCliente)
     this.reservaForm = this.fb.group({
       nombreCliente: ['', Validators.required],
-      emailCliente: ['', [Validators.required, Validators.email]], // <--- ESTO FALTABA
+      emailCliente: ['', [Validators.required, Validators.email]],
       telefonoCliente: [''],
       fecha: [new Date(), Validators.required],
       hora: ['', Validators.required],
       cantidadPersonas: [2, [Validators.required, Validators.min(1)]],
       observaciones: [''],
+      // FormArray para guardar los IDs seleccionados (ej: [1, 5])
       mesasSeleccionadas: this.fb.array([], Validators.required) 
     });
 
-    // 3. Cargar Configuración y Datos
     this.cargarConfiguracionRestaurante();
     this.cargarDatosIniciales();
 
-    // 4. Escuchar cambios para filtrar mesas
     this.reservaForm.get('fecha')?.valueChanges.subscribe(() => this.filtrarMesas());
     this.reservaForm.get('hora')?.valueChanges.subscribe(() => this.filtrarMesas());
   }
 
-  // --- CARGA DE HORARIOS ---
   cargarConfiguracionRestaurante() {
     this.restauranteService.getRestaurantePorId(this.restauranteId).subscribe({
       next: (restaurante: RestauranteDTO) => {
@@ -121,45 +120,38 @@ export class AdminNuevaReservaPage implements OnInit {
     return horarios;
   }
 
-  // --- CARGA DE DATOS ---
   cargarDatosIniciales() {
     this.cargando.set(true);
     
-    // 1. Traer TODAS las mesas
     this.restauranteService.getListarMesas(this.restauranteId).subscribe(mesas => {
       this.todasLasMesasCache = mesas; 
       
-      // 2. Traer reservas para calcular conflictos
       this.reservasService.getReservasPorRestaurante(this.restauranteId).subscribe(reservas => {
         this.reservasExistentes = reservas.filter(r => r.estado !== 'CANCELADA' && r.estado !== 'RECHAZADA');
-        
-        this.filtrarMesas(); // Filtro inicial
+        this.filtrarMesas();
         this.cargando.set(false);
       });
     });
   }
 
-  // --- LÓGICA DE FILTRADO ---
   filtrarMesas() {
     const fFecha = this.reservaForm.get('fecha')?.value;
     const fHora = this.reservaForm.get('hora')?.value;
 
     if (!fFecha) return; 
 
-    // A. Detectar si es HOY
     const fechaSeleccionada = new Date(fFecha);
     const hoy = new Date();
     fechaSeleccionada.setHours(0,0,0,0);
     hoy.setHours(0,0,0,0);
     const esHoy = fechaSeleccionada.getTime() === hoy.getTime();
 
-    // B. Detectar ocupación por horario
     let mesasOcupadasIds = new Set<number>();
 
     if (fHora) {
         const fechaISO = new Date(fFecha).toISOString().split('T')[0];
         const inicioSeleccionado = new Date(`${fechaISO}T${fHora}:00`).getTime();
-        const finSeleccionado = inicioSeleccionado + (4 * 60 * 60 * 1000); // 4 horas turno
+        const finSeleccionado = inicioSeleccionado + (4 * 60 * 60 * 1000);
 
         this.reservasExistentes.forEach(reserva => {
           const inicioReserva = new Date(reserva.fechaHora).getTime();
@@ -171,18 +163,9 @@ export class AdminNuevaReservaPage implements OnInit {
         });
     }
 
-    // C. Filtro Final (Bloqueadas + Ocupadas)
     const mesasFiltradas = this.todasLasMesasCache.filter(m => {
-        // 1. Si está ocupada por otra reserva -> OCULTAR
         if (mesasOcupadasIds.has(m.id)) return false;
-
-        // 2. Si está bloqueada manualmente:
-        //    - Si es HOY -> OCULTAR (no disponible ahora)
-        //    - Si es FUTURO -> MOSTRAR (asumimos desbloqueo)
-        if (m.bloqueada && esHoy) {
-            return false;
-        }
-
+        if (m.bloqueada && esHoy) return false;
         return true; 
     });
 
@@ -199,11 +182,11 @@ export class AdminNuevaReservaPage implements OnInit {
     }
   }
 
-onSubmit() {
-    if (this.reservaForm.invalid) {
-      if (this.reservaForm.get('mesasSeleccionadas')?.invalid) {
-        this.snackBar.open('Debes seleccionar al menos una mesa.', 'Cerrar');
-      }
+  onSubmit() {
+    // Validar que haya mesas seleccionadas (Angular a veces no marca inválido el FormArray vacío si no se tocó)
+    const mesasArray = this.reservaForm.get('mesasSeleccionadas') as FormArray;
+    if (this.reservaForm.invalid || mesasArray.length === 0) {
+      this.snackBar.open('Debes completar todos los campos y seleccionar al menos una mesa.', 'Cerrar');
       return;
     }
 
@@ -212,35 +195,32 @@ onSubmit() {
 
     const fechaISO = new Date(formValue.fecha).toISOString().split('T')[0];
     const fechaHoraISO = `${fechaISO}T${formValue.hora}:00`;
-
-    // Incluimos Email en observación
-    // const datosCliente = `[Manual] Cliente: ${formValue.nombreCliente}, Email: ${formValue.emailCliente}, Tel: ${formValue.telefonoCliente}. `;
-    // const obsFinal = datosCliente + (formValue.observaciones || '');
     const obsFinal = formValue.observaciones || '';
     const adminId = this.authService.getUsuarioIdFromToken();
-    
-    // 💡 CAMBIO PRINCIPAL: Ya no mapeamos a objetos {mesaId: id}.
-    // Asumimos que formValue.mesasSeleccionadas ya es un array de números [1, 5, ...]
-    // Si viene como strings, podrías necesitar un .map(id => Number(id))
+
+    // -----------------------------------------------------------
+    // ⚠️ TRANSFORMACIÓN CRÍTICA: number[] -> {mesaId: number}[]
+    // -----------------------------------------------------------
+    // 'formValue.mesasSeleccionadas' es un array de números [1, 2]
+    // 'mesasReservadas' debe ser [{mesaId: 1}, {mesaId: 2}]
     const listaDeIds: number[] = formValue.mesasSeleccionadas;
 
+
     const payload: CrearReservaPayload = {
-      // Conversión explícita a Number para evitar error de tipos
       usuarioId: Number(adminId), 
       restauranteId: Number(this.restauranteId),
-      
       fechaHora: fechaHoraISO,
       cantidadPersonas: formValue.cantidadPersonas,
       tipo: 'MANUAL',
-      
-      // AHORA LO MANDAMOS EN SU PROPIO CAMPO (Asegúrate de agregar esto a la interfaz CrearReservaPayload en el servicio también)
-      nombreClienteManual: formValue.nombreCliente, // Enviamos el nombre aquí
+      nombreClienteManual: formValue.nombreCliente, 
       emailCliente: formValue.emailCliente,
-      
-      // Las observaciones van limpias, sin datos ocultos
       observaciones: obsFinal, 
-      mesasReservadas: mesasParaEnviar
+      
+      // Aquí pasamos el array transformado
+      mesaIds: listaDeIds 
     };
+
+    console.log('PAYLOAD CORREGIDO:', JSON.stringify(payload, null, 2));
 
     this.reservasService.crearReserva(payload)
       .pipe(
@@ -253,10 +233,9 @@ onSubmit() {
       )
       .subscribe(() => {
         this.snackBar.open('¡Reserva manual creada!', 'OK', { duration: 3000 });
-        // Redirigir a donde corresponda (ej: dashboard o calendario)
-        // this.router.navigate(['/admin/reservas']); 
+        this.router.navigate(['/admin']);
       });
-}
+  }
 
   cancelar() { this.router.navigate(['/admin']); }
 }

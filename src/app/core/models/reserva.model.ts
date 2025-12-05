@@ -15,13 +15,15 @@ export interface DisponibilidadResponse {
 export interface CrearReservaPayload {
   usuarioId: number;
   restauranteId: number;
-  fechaHora: string; // "YYYY-MM-DDTHH:MM:SS"
+  fechaHora: string; // Formato ISO
   cantidadPersonas: number;
-  tipo: string; // Ej: "NORMAL"
+  tipo: string; // 'MANUAL' | 'NORMAL'
+  
   emailCliente?: string;
   nombreClienteManual?: string;
-  observaciones?: string; // Opcional
-  mesaIds: number[];
+  observaciones?: string;
+
+  mesaIds: number[];  
 }
 export interface MisReservasResponse {
   id: string; // ID de la reserva
@@ -39,9 +41,9 @@ export interface ReservaAdminDTO {
   cantidadPersonas: number;
   estado: 'PENDIENTE' | 'CONFIRMADA' | 'RECHAZADA' | 'CANCELADA';
   observaciones: string;
+  tipo: string;
   usuarioId: number;
   nombreCliente: string;
   apellidoCliente: string;
   mesasIds: number[];
-  tipo: string;
 }
