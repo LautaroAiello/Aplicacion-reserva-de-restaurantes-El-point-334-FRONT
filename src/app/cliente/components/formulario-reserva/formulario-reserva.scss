@@ -129,13 +129,52 @@ button[mat-flat-button] {
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
+    &.ocupada {
+    background-color: #ffebee; /* Rojo muy suave de fondo */
+    border-color: #ef5350;     /* Rojo borde */
+    color: #c62828;            /* Texto rojo oscuro */
+    cursor: not-allowed;       /* Cursor de prohibido 🚫 */
+    opacity: 1;                /* Aseguramos que se vea bien (no transparente) */
+    
+    /* Efecto rayado opcional para indicar "ocupado" */
+    background-image: repeating-linear-gradient(
+      45deg,
+      #ffebee,
+      #ffebee 10px,
+      #ffcdd2 10px,
+      #ffcdd2 20px
+    );
+
+    mat-icon {
+      color: #c62828;
+    }
+    
+    .ocupada-badge {
+      background-color: #c62828;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: bold;
+      position: absolute;
+      bottom: 5px;
+    }
+
+    /* Quitamos el hover para que no parezca clickeable */
+    &:hover {
+      transform: none;
+      box-shadow: none;
+      background-color: #ffebee; 
+    }
+  }
 
     /* ESTADO SELECCIONADO */
     &.selected {
-        background-color: #e3f2fd; // Azul claro fondo
-        border-color: #2196f3;
-        
-        mat-icon { color: #1976d2; }
+        background-color: #e8f5e9;
+    border-color: #4caf50;
+    color: #2e7d32;
+    
+    mat-icon { color: #2e7d32; }
     }
 
     /* ESTADO BLOQUEADO (Ocupada o inactiva) */

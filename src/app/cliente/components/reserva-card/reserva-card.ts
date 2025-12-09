@@ -2,12 +2,14 @@ import {
   ChangeDetectionStrategy,
   Component,
   input,
-  InputSignal,
+  output, // 💡 Nuevo: Para emitir eventos con Signals
 } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common'; // <-- Importar DatePipe
+import { CommonModule, DatePipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatChipsModule } from '@angular/material/chips'; // Opcional: para que el estado se vea mejor
+import { MisReservasResponse } from '../../../core/models/reserva.model'; // Ajusta la ruta a tu modelo
 
 @Component({
   selector: 'app-reserva-card',
@@ -17,21 +19,24 @@ import { MatButtonModule } from '@angular/material/button';
     MatCardModule,
     MatIconModule,
     MatButtonModule,
-    DatePipe, // <-- Añadir DatePipe a imports
+    MatChipsModule, 
+    DatePipe,
   ],
   templateUrl: './reserva-card.html',
   styleUrl: './reserva-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [DatePipe], // <-- Proveer DatePipe
+  // providers: [DatePipe] -> No es necesario en providers si solo se usa en el HTML
 })
 export class ReservaCard {
-  // Usamos 'input' (la API moderna) para recibir los datos
-  reserva: InputSignal<any> = input.required<any>();
+  // 1. Tipamos el input con la interfaz correcta
+  reserva = input.required<MisReservasResponse>();
 
-  // (Opcional) Aquí podrías añadir un @Output para el botón 'cancelar'
-  // @Output() cancelar = new EventEmitter<string>();
+  // 2. Output moderno para avisar al padre
+  cancelar = output<string>();
 
-  // onCancelar() {
-  //   this.cancelar.emit(this.reserva().id);
-  // }
+  // 3. Método gatillo
+  onCancelar() {
+    // Emitimos el ID (string)
+    this.cancelar.emit(this.reserva().id);
+  }
 }

@@ -1,36 +1,76 @@
 .reserva-card {
-  margin-bottom: 20px;
-}
+  max-width: 400px;
+  width: 100%;
+  margin-bottom: 16px;
+  border-left: 6px solid #ccc; // Borde gris por defecto
+  transition: all 0.3s ease;
 
-mat-card-header {
-  display: flex;
-  justify-content: space-between;
+  // IMAGEN
+  .card-img {
+    height: 150px;
+    object-fit: cover;
+  }
 
-  mat-card-subtitle {
-    font-weight: 500;
-    padding: 4px 8px;
+  // ESTILOS DE ESTADO (Colores)
+  .status-badge {
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-top: 5px;
+    display: inline-block;
+    padding: 2px 8px;
     border-radius: 4px;
+    font-size: 0.8rem;
+    color: white; // Texto blanco por defecto en badges
 
-    // Colores según el estado
-    &.confirmada {
-      color: #1a6e1e;
-      background-color: #d1f0d3;
+    &.CONFIRMADA {
+      background-color: #4caf50; // Verde
+      border-left-color: #4caf50; 
     }
-    &.cancelada {
-      color: #b71c1c;
-      background-color: #ffcdd2;
+    
+    &.PENDIENTE {
+      background-color: #ff9800; // Naranja
+      border-left-color: #ff9800;
+    }
+
+    &.CANCELADA {
+      background-color: #f44336; // Rojo
+      border-left-color: #f44336;
     }
   }
-}
 
-.info-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-  color: #333;
+  // CONTENIDO
+  .info-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    color: #555;
 
-  mat-icon {
-    color: #666;
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      color: #757575;
+    }
+  }
+
+  // ACCIONES
+  .cancel-label {
+    color: #f44336;
+    font-weight: bold;
+    margin-right: 16px;
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+
+  // ESTADO GLOBAL DE LA TARJETA SI ESTÁ CANCELADA
+  &.is-cancelled {
+    opacity: 0.7; // Se ve un poco transparente
+    background-color: #f5f5f5; // Fondo grisáceo
+    border-left-color: #f44336 !important; // Borde rojo forzado
+    
+    .status-badge {
+        background-color: #f44336;
+    }
   }
 }

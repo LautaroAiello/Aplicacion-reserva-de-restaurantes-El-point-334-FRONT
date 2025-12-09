@@ -62,5 +62,10 @@ export class ReservasService {
     );
   }
 
-  // (Aquí también podrías tener 'cancelarReserva()', etc.)
+  cancelarReserva(reservaId: number, usuarioId: number): Observable<void> {
+    return this.http.put<void>(
+      `${this.apiUrl}/api/reserva/reservas/${reservaId}/cancelar?usuarioId=${usuarioId}`,
+      {} // Body vacío
+    );
+  }
 }
