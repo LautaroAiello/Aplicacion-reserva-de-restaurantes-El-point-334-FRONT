@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { catchError, finalize, tap, throwError } from 'rxjs';
 import { RestauranteService } from '../../../core/services/restaurante.service';
-
+import { AlertService } from '../../../core/services/alert.service';
 // Material
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -34,7 +34,7 @@ export class AsignarGestorPage implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private snackBar = inject(MatSnackBar);
-
+   private alertService = inject(AlertService);
   protected gestorForm!: FormGroup;
   protected errorMessage = signal<string | null>(null);
   protected restauranteId!: string;
@@ -79,46 +79,78 @@ export class AsignarGestorPage implements OnInit {
     if (this.gestorForm.invalid) return;
     
     this.errorMessage.set(null);
-    this.cargando.set(true); // Activamos spinner
+    this.cargando.set(true); 
 
     this.restauranteService
       .asignarGestor(this.restauranteId, this.gestorForm.value)
       .pipe(
         catchError((err) => {
-          // El backend a veces manda el mensaje de error en 'error' (texto) o 'error.message'
           const msg = err.error || err.message || 'Error al crear el gestor.';
           this.errorMessage.set(msg);
+          // Opcional: Mostrar alerta de error aquí también si prefieres
           return throwError(() => err);
         }),
-        finalize(() => this.cargando.set(false)) // Desactivamos spinner al terminar (éxito o error)
+        finalize(() => this.cargando.set(false))
       )
+      // Usamos async para esperar a que el usuario cierre la alerta
       .subscribe({
-        next: (respuestaTexto) => {
-          this.snackBar.open(respuestaTexto || 'Gestor asignado con éxito', 'Cerrar', {
-            duration: 4000,
-          });
+        next: async (respuestaTexto) => {
+          
+          // 3. LLAMADA A SWEET ALERT (Éxito)
+          await this.alertService.success(
+            '¡Gestor Asignado!', 
+            'El gestor ha sido creado y asignado al restaurante correctamente.'
+          );
+          
           this.gestorForm.reset();
-          this.cargarGestores();
-          this.router.navigate(['/admin']);
+          this.cargarGestores(); // Actualizamos la lista de abajo
+          
         },
-        error: (err) => this.snackBar.open('Error al crear gestor', 'Cerrar')
+        error: (err) => {
+          // 5. LLAMADA A SWEET ALERT (Error)
+          this.alertService.error('Error', 'No se pudo crear el gestor.');
+        }
       });
   }
 
-  onEliminar(gestor: GestorDTO) {
-    if(!confirm(`¿Eliminar a ${gestor.nombre}?`)) return;
+  async onEliminar(gestor: GestorDTO) {
     
+    // 1. PRIMERO: Preguntar al usuario y esperar su respuesta
+    const confirmado = await this.alertService.confirm(
+      '¿Eliminar Gestor?',
+      `¿Estás seguro de que quieres eliminar a ${gestor.nombre} ${gestor.apellido}? Perderá el acceso al panel.`,
+      'Sí, eliminar'
+    );
+
+    // 2. Si el usuario canceló, no hacemos nada más.
+    if (!confirmado) return;
+
+    // 3. Si confirmó, procedemos con la lógica
     this.cargando.set(true);
-    this.restauranteService.eliminarGestor(this.restauranteId, gestor.id).subscribe({
-      next: () => {
-        this.snackBar.open('Gestor eliminado.', 'OK', { duration: 3000 });
-        this.cargarGestores();
-      },
-      error: () => {
-        this.cargando.set(false);
-        this.snackBar.open('Error al eliminar.', 'Cerrar');
-      }
-    });
+
+    this.restauranteService.eliminarGestor(this.restauranteId, gestor.id)
+      .pipe(
+        // Aseguramos que el spinner se apague pase lo que pase
+        finalize(() => this.cargando.set(false)) 
+      )
+      .subscribe({
+        next: () => {
+          // 4. Éxito: Mostramos mensaje verde y recargamos la lista
+          this.alertService.success(
+            'Gestor Eliminado', 
+            'El usuario ha sido desvinculado correctamente.'
+          );
+          this.cargarGestores();
+        },
+        error: (err) => {
+          // 5. Error: Mostramos mensaje rojo
+          console.error(err);
+          this.alertService.error(
+            'Error', 
+            'No se pudo eliminar al gestor. Intente nuevamente.'
+          );
+        }
+      });
   }
 
   togglePassword(event: MouseEvent) {

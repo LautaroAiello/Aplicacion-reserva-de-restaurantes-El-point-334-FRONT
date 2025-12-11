@@ -16,7 +16,7 @@ import { CommonModule } from '@angular/common';
 import { catchError, throwError } from 'rxjs';
 import { RestauranteService } from '../../../core/services/restaurante.service';
 import { AuthService } from '../../../core/services/auth.service';
-
+import { AlertService } from '../../../core/services/alert.service';
 // Material
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -53,8 +53,9 @@ export class ConfiguracionPage implements OnInit {
   private fb = inject(FormBuilder);
   private restauranteService = inject(RestauranteService);
   private authService = inject(AuthService);
+   private alertService = inject(AlertService);
   private snackBar = inject(MatSnackBar);
-
+  private router = inject(Router);
   protected configForm!: FormGroup;
   protected errorMessage = signal<string | null>(null);
   protected cargando = signal<boolean>(true);
@@ -172,13 +173,11 @@ export class ConfiguracionPage implements OnInit {
       .subscribe({
         next: () => {
           this.cargando.set(false);
-          this.snackBar.open('¡Restaurante actualizado!', 'Cerrar', {
-            duration: 3000,
-          });
+          this.alertService.success('Restaurante actualizado!', 'Los datos han sido actualizados correctamente.');
         },
         error: (err) => {
           this.cargando.set(false);
-          this.snackBar.open('Error al guardar.', 'Cerrar', { duration: 3000 });
+          this.alertService.error('Error', 'Hubo un problema al guardar los cambios.')
         },
       });
   }
@@ -208,5 +207,9 @@ export class ConfiguracionPage implements OnInit {
           },
         });
     }
+  }
+
+  volver() {
+    this.router.navigate(['/admin']);
   }
 }

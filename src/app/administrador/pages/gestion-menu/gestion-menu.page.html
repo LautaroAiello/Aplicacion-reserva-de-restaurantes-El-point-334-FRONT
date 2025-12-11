@@ -1,5 +1,10 @@
 <div class="gestion-container">
-  <h1>Gestión de Menú</h1>
+  <div class="header-actions">
+    <button mat-icon-button (click)="volver()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1>Gestión de Menu</h1>
+  </div>
 
   <!-- ============================================= -->
   <!-- 1. FORMULARIO (CREAR PLATO)                   -->
@@ -63,7 +68,7 @@
           type="submit"
           [disabled]="platoForm.invalid"
         >
-          Crear Plato
+          Confirmar
         </button>
       </form>
     </mat-card-content>

@@ -1,8 +1,12 @@
 <div class="nueva-reserva-container">
   <mat-card>
     <mat-card-header>
-      <mat-card-title>Nueva Reserva Manual</mat-card-title>
-      <mat-card-subtitle>Ingresa una reserva presencial o telefónica</mat-card-subtitle>
+      <div class="header-actions">
+        <button mat-icon-button (click)="volver()">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h1>Nueva Reserva Manual</h1>
+      </div>
     </mat-card-header>
 
     <mat-card-content>
@@ -20,12 +24,15 @@
           <mat-form-field appearance="outline">
             <mat-label>Nombre y Apellido</mat-label>
             <input matInput formControlName="nombreCliente" placeholder="Ej: Juan Pérez">
-            <mat-error>Requerido</mat-error>
+            <mat-error *ngIf="reservaForm.get('nombreCliente')?.hasError('required')">Requerido</mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Teléfono</mat-label>
             <input matInput formControlName="telefonoCliente" type="tel">
+            <mat-error *ngIf="reservaForm.get('telefonoCliente')?.hasError('pattern')">
+              Ingrese solo números válidos
+            </mat-error>
           </mat-form-field>
         </div>
 

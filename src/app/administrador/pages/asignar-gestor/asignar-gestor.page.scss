@@ -60,3 +60,9 @@ button[mat-flat-button] {
 }
 
 .list-card { margin-top: 20px; } table { width: 100%; }
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  h1 { margin: 0; }
+}

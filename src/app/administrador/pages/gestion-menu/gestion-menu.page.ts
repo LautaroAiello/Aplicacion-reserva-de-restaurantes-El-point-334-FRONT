@@ -15,7 +15,8 @@ import { CommonModule } from '@angular/common';
 import { catchError, throwError, tap, forkJoin } from 'rxjs';
 import { RestauranteService } from '../../../core/services/restaurante.service';
 import { AuthService } from '../../../core/services/auth.service';
-
+import { AlertService } from '../../../core/services/alert.service';
+import { Router } from '@angular/router';
 // Material
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -55,7 +56,9 @@ export class GestionMenuPage implements OnInit {
   private fb = inject(FormBuilder);
   private restauranteService = inject(RestauranteService);
   private authService = inject(AuthService);
+  private alertService = inject(AlertService);
   private snackBar = inject(MatSnackBar);
+  private router = inject(Router);
 
   protected platoForm!: FormGroup;
   protected errorMessage = signal<string | null>(null);
@@ -143,27 +146,6 @@ export class GestionMenuPage implements OnInit {
     });
   }
 
-  // cargarDatosIniciales() {
-  //   this.cargando.set(true);
-  //   forkJoin({
-  //     // Ejecuta observables en paralelo
-  //     platos: this.restauranteService.getListarPlatos(this.restauranteId),
-  //     categorias: this.restauranteService.getListarCategoriasPlatos(),
-  //   })
-  //     .pipe(
-  //       catchError((err) => {
-  //         this.errorMessage.set('Error al cargar los datos de la página.');
-  //         this.cargando.set(false);
-  //         return throwError(() => err);
-  //       })
-  //     )
-  //     .subscribe(({ platos, categorias }) => {
-  //       this.listaPlatos.set(platos);
-  //       this.listaCategorias.set(categorias);
-  //       this.cargando.set(false);
-  //     });
-  // }
-
   onGuardarPlato() {
     if (this.platoForm.invalid) return;
     this.errorMessage.set(null);
@@ -203,12 +185,10 @@ export class GestionMenuPage implements OnInit {
         )
         .subscribe({
           next: () => {
-            this.snackBar.open('Plato actualizado', 'Cerrar', {
-              duration: 3000,
-            });
+             this.alertService.success('¡Plato Actualizado!', 'Los cambios se han guardado correctamente.');
             this.onCancelarEdicion(); // Resetea el form y el modo
           },
-          error: (err) => this.errorMessage.set('Error al actualizar.'),
+          error: (err) => this.alertService.error('Error', 'No se pudo actualizar el plato.'),
         });
     } else {
       // --- MODO CREACIÓN (POST) ---
@@ -227,30 +207,43 @@ export class GestionMenuPage implements OnInit {
         )
         .subscribe({
           next: () => {
-            this.snackBar.open('Plato creado', 'Cerrar', { duration: 3000 });
+            // 3. Éxito con SweetAlert
+            this.alertService.success('¡Plato Creado!', 'El nuevo plato se ha añadido al menú.');
             this.platoForm.reset({ precio: 0, estado: 'DISPONIBLE' });
           },
-          error: (err) => this.errorMessage.set('Error al crear.'),
+          error: (err) => {
+             this.alertService.error('Error', 'No se pudo crear el plato.');
+          },
         });
     }
   }
 
   // --- LÓGICA DE ELIMINAR ---
-  onEliminar(plato: PlatoDTO) {
-    if (!confirm(`¿Estás seguro de eliminar "${plato.nombre}"?`)) return;
+  async onEliminar(plato: PlatoDTO) {
+    // 1. Confirmación
+    const confirmado = await this.alertService.confirm(
+      '¿Eliminar Plato?',
+      `¿Estás seguro de eliminar "${plato.nombre}"? Esta acción no se puede deshacer.`,
+      'Sí, eliminar'
+    );
 
+    if (!confirmado) return;
+
+    // 2. Llamada al servicio
     this.restauranteService
       .eliminarPlato(this.restauranteId, plato.id)
       .subscribe({
         next: () => {
-          // Actualizamos la tabla localmente borrando el item
+          // Éxito
+          this.alertService.success('Plato Eliminado', 'El plato ha sido eliminado del menú.');
           this.listaPlatos.update((platos) =>
             platos.filter((p) => p.id !== plato.id)
           );
-          this.snackBar.open('Plato eliminado', 'Cerrar', { duration: 3000 });
         },
-        error: (err) =>
-          this.snackBar.open('Error al eliminar', 'Cerrar', { duration: 3000 }),
+        error: (err) => {
+          // Error
+          this.alertService.error('Error', 'No se pudo eliminar el plato.');
+        },
       });
   }
 
@@ -277,5 +270,9 @@ export class GestionMenuPage implements OnInit {
   onCancelarEdicion() {
     this.platoEditarId.set(null); // Volvemos a modo creación
     this.platoForm.reset({ precio: 0, estado: 'DISPONIBLE' });
+  }
+
+  volver() {
+    this.router.navigate(['/admin']);
   }
 }

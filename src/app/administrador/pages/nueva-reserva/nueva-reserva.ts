@@ -8,7 +8,7 @@ import { catchError, finalize, throwError } from 'rxjs';
 import { ReservasService } from '../../../core/services/reservas.service';
 import { RestauranteService } from '../../../core/services/restaurante.service';
 import { AuthService } from '../../../core/services/auth.service';
-
+import { AlertService } from '../../../core/services/alert.service';
 // Modelos
 import { CrearReservaPayload, ReservaAdminDTO } from '../../../core/models/reserva.model';
 
@@ -47,8 +47,8 @@ export class AdminNuevaReservaPage implements OnInit {
   private restauranteService = inject(RestauranteService);
   private authService = inject(AuthService);
   private router = inject(Router);
+   private alertService = inject(AlertService);
   private snackBar = inject(MatSnackBar);
-
   protected reservaForm!: FormGroup;
   protected mesasDisponibles = signal<MesaDTO[]>([]);
   protected cargando = signal<boolean>(false);
@@ -73,7 +73,7 @@ export class AdminNuevaReservaPage implements OnInit {
     this.reservaForm = this.fb.group({
       nombreCliente: ['', Validators.required],
       emailCliente: ['', [Validators.required, Validators.email]],
-      telefonoCliente: [''],
+      telefonoCliente: ['', [Validators.pattern('^[0-9]*$')]],
       fecha: [new Date(), Validators.required],
       hora: ['', Validators.required],
       cantidadPersonas: [2, [Validators.required, Validators.min(1)]],
@@ -186,6 +186,7 @@ export class AdminNuevaReservaPage implements OnInit {
     // Validar que haya mesas seleccionadas (Angular a veces no marca inválido el FormArray vacío si no se tocó)
     const mesasArray = this.reservaForm.get('mesasSeleccionadas') as FormArray;
     if (this.reservaForm.invalid || mesasArray.length === 0) {
+      this.reservaForm.markAllAsTouched();
       this.snackBar.open('Debes completar todos los campos y seleccionar al menos una mesa.', 'Cerrar');
       return;
     }
@@ -226,16 +227,27 @@ export class AdminNuevaReservaPage implements OnInit {
       .pipe(
         finalize(() => this.cargando.set(false)),
         catchError(err => {
-          const msg = err.error?.message || err.error || 'Error al crear reserva.';
-          this.snackBar.open(msg, 'Cerrar', { duration: 5000 });
+          // Intentamos mostrar el mensaje exacto del backend (ej: "Capacidad insuficiente")
+          const msg = err.error?.message || err.error || 'Error al crear la reserva.';
+          this.alertService.error('Error', msg);
           return throwError(() => err);
         })
       )
-      .subscribe(() => {
-        this.snackBar.open('¡Reserva manual creada!', 'OK', { duration: 3000 });
+      // 3. AQUÍ HACEMOS EL CALLBACK ASYNC PARA ESPERAR AL USUARIO
+      .subscribe(async () => {
+        
+        await this.alertService.success(
+          '¡Reserva Creada!', 
+          'La reserva manual se ha guardado correctamente y está en la lista de pendientes.'
+        );
+        
+        // La navegación ocurre SOLO después de que el usuario cierra la alerta
         this.router.navigate(['/admin']);
       });
   }
 
   cancelar() { this.router.navigate(['/admin']); }
+  volver() {
+    this.router.navigate(['/admin']);
+  }
 }

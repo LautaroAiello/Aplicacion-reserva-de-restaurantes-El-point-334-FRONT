@@ -87,3 +87,10 @@ td span.agotado {
   padding: 4px 8px;
   border-radius: 4px;
 }
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  h1 { margin: 0; }
+}

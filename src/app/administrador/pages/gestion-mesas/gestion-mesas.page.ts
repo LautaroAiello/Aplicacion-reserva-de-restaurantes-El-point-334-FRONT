@@ -15,7 +15,8 @@ import { CommonModule } from '@angular/common';
 import { catchError, throwError, tap, finalize } from 'rxjs';
 import { RestauranteService } from '../../../core/services/restaurante.service';
 import { AuthService } from '../../../core/services/auth.service';
-
+import { AlertService } from '../../../core/services/alert.service';
+import { Router } from '@angular/router';
 // Modelos
 import { MesaCreateDTO, MesaDTO } from '../../../core/models/mesa.model';
 
@@ -53,8 +54,9 @@ export class GestionMesasPage implements OnInit {
   private fb = inject(FormBuilder);
   private restauranteService = inject(RestauranteService);
   private authService = inject(AuthService);
+  private alertService = inject(AlertService);
   private snackBar = inject(MatSnackBar);
-
+  private router = inject(Router);
   protected mesaForm!: FormGroup;
   protected errorMessage = signal<string | null>(null);
   protected cargando = signal<boolean>(true);
@@ -198,22 +200,30 @@ export class GestionMesasPage implements OnInit {
     this.mesaForm.reset({ capacidad: 2 });
   }
 
-  onEliminar(mesa: MesaDTO) {
+  async onEliminar(mesa: MesaDTO) {
     if (!this.esAdmin()) return;
-    if (!confirm(`¿Eliminar la mesa "${mesa.descripcion}"?`)) return;
+    // 1. Pedir confirmación con SweetAlert
+    const confirmado = await this.alertService.confirm(
+      '¿Eliminar Mesa?',
+      `¿Estás seguro de eliminar la mesa "${mesa.descripcion}"? Esta acción no se puede deshacer.`,
+      'Sí, eliminar'
+    );
+
+    if (!confirmado) return;
 
     this.cargando.set(true);
+
     this.restauranteService
       .eliminarMesa(this.restauranteId, mesa.id)
       .pipe(finalize(() => this.cargando.set(false)))
       .subscribe({
         next: () => {
-          this.snackBar.open('Mesa eliminada', 'OK', { duration: 3000 });
+          this.alertService.success('Mesa eliminada', 'La mesa ha sido eliminada del sistema.');
           this.listaMesas.update((mesas) =>
             mesas.filter((m) => m.id !== mesa.id)
           );
         },
-        error: () => this.snackBar.open('Error al eliminar', 'Cerrar'),
+        error: () => this.alertService.error('Error', 'No se pudo eliminar la mesa. Verifica que no tenga reservas activas.'),
       });
   }
 
@@ -244,5 +254,9 @@ export class GestionMesasPage implements OnInit {
                 this.cargarMesas();
             }
         });
+  }
+
+  volver() {
+    this.router.navigate(['/admin']);
   }
 }
