@@ -1,47 +1,59 @@
-@if (restaurante$ | async; as restaurante) {
-
-<div class="detalle-container">
-  <img
-    [src]="restaurante.imagenUrl"
-    [alt]="restaurante.nombre"
-    class="header-image"
-  />
-
-  <div class="info-content">
-    <h1>{{ restaurante.nombre }}</h1>
-
-    <div class="info-row">
-      <mat-icon>location_on</mat-icon>
-      <span>
-        {{ restaurante.direccion.calle }} {{ restaurante.direccion.numero }}, {{
-        restaurante.direccion.ciudad }}
-      </span>
-    </div>
-
-    <div class="info-row">
-      <mat-icon>phone</mat-icon>
-      <span>{{ restaurante.telefono }}</span>
-    </div>
-    <div class="info-row">
-      <mat-icon>access_time</mat-icon>
-      <span
-        >{{ restaurante.horarioApertura }} - {{ restaurante.horarioCierre
-        }}</span
-      >
-    </div>
-
-    <hr />
-
-    <h2>Hacer una reserva</h2>
-
-    <app-formulario-reserva
-      [restauranteId]="restaurante.id"
-      [horarioApertura]="restaurante.horarioApertura"
-      [horarioCierre]="restaurante.horarioCierre"
-    ></app-formulario-reserva>
+@if (loading()) {
+  <div class="loading-container">
+    <p>Cargando datos del restaurante...</p>
   </div>
-</div>
+} @else if (restaurante(); as rest) {
+
+  <div class="detalle-container">
+    
+    <img
+      [src]="rest.imagenUrl || 'assets/images/placeholder-restaurante.jpg'"
+      [alt]="rest.nombre"
+      class="header-image"
+    />
+
+    <div class="info-content">
+      
+      <div class="header-row">
+        <h1>{{ rest.nombre }}</h1>
+        
+        <button mat-flat-button color="accent" (click)="abrirMenu()">
+          <mat-icon>restaurant_menu</mat-icon>
+          Ver Menú
+        </button>
+      </div>
+
+      @if (rest.direccion) {
+        <div class="info-row">
+          <mat-icon>location_on</mat-icon>
+          <span>
+            {{ rest.direccion.calle }} {{ rest.direccion.numero }}, {{ rest.direccion.ciudad }}
+          </span>
+        </div>
+      }
+
+      <div class="info-row">
+        <mat-icon>phone</mat-icon>
+        <span>{{ rest.telefono || 'Sin teléfono registrado' }}</span>
+      </div>
+
+      <div class="info-row">
+        <mat-icon>access_time</mat-icon>
+        <span>{{ rest.horarioApertura }} - {{ rest.horarioCierre }}</span>
+      </div>
+
+      <hr />
+
+      <h2>Hacer una reserva</h2>
+
+      <app-formulario-reserva
+        [restauranteId]="rest.id.toString()" 
+        [horarioApertura]="rest.horarioApertura"
+        [horarioCierre]="rest.horarioCierre"
+      ></app-formulario-reserva>
+    </div>
+  </div>
 
 } @else {
-<p>Cargando datos del restaurante...</p>
+  <p>No se encontró el restaurante.</p>
 }

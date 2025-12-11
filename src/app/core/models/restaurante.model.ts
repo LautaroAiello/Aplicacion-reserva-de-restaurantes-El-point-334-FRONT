@@ -19,6 +19,7 @@ export interface RestauranteDTO {
   imagenUrl: string;
   configuracion?: ConfiguracionRestauranteDTO;
   esFavorito?: boolean;
+  menu: Plato[];
 }
 
 // Define tu DTO complejo
@@ -55,11 +56,21 @@ export interface RestauranteUpdateDTO {
 export interface ConfiguracionRestauranteDTO {
   tiempoAnticipacionMinutos: number;
   minPersonasEventoLargo: number;
-  
+  mostrarPrecios: boolean;
 }
 
 export interface EtiquetaDTO {
   id: number;
   nombre: string;
   imagenUrl: string;
+}
+
+export interface Plato {
+  id: number;
+  nombre: string;
+  descripcion: string;
+  precio: number;
+  imagenUrl: string;
+  estado: string;     
+  nombreCategoria: string;
 }

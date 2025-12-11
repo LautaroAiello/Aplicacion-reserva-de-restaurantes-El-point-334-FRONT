@@ -1,0 +1,55 @@
+<div class="dialog-container">
+  
+  <div class="dialog-header">
+    <div class="title-section">
+      <mat-icon>restaurant_menu</mat-icon>
+      <h2>Menú: {{ data.nombreRestaurante }}</h2>
+    </div>
+    <button mat-icon-button (click)="cerrar()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content>
+    @if (!data.menu || data.menu.length === 0) {
+      <div class="empty-state">
+        <p>Este restaurante aún no ha cargado su menú.</p>
+      </div>
+    } @else {
+      <div class="menu-list">
+        @for (plato of data.menu; track plato.id) {
+          <div class="plato-card" [class.agotado]="plato.estado === 'AGOTADO'">
+            
+            <img 
+              [src]="plato.imagenUrl || 'assets/images/placeholder-plato.jpg'" 
+              [alt]="plato.nombre"
+              class="plato-img"
+            >
+
+            <div class="plato-details">
+              <div class="plato-top">
+                <h3 class="plato-name">
+                  {{ plato.nombre }}
+                  @if(plato.estado === 'AGOTADO') {
+                    <span class="badge-agotado">(Agotado)</span>
+                  }
+                </h3>
+                
+                @if (data.mostrarPrecios) {
+                  <span class="plato-price">${{ plato.precio | number:'1.0-0' }}</span>
+                }
+              </div>
+
+              <p class="plato-desc">{{ plato.descripcion }}</p>
+              
+              <div class="plato-footer">
+                <span class="categoria-badge">{{ plato.nombreCategoria || 'General' }}</span>
+              </div>
+            </div>
+
+          </div>
+        }
+      </div>
+    }
+  </mat-dialog-content>
+</div>
