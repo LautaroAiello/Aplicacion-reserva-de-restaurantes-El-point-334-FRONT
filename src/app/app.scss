@@ -1,0 +1,33 @@
+.app-global-header {
+  background-color: #ffffff; // Fondo blanco (o el color de tu marca)
+  width: 100%;
+  padding: 12px 0;           // Espacio arriba y abajo
+  display: flex;
+  justify-content: center;   // Centrado horizontal
+  align-items: center;       // Centrado vertical
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); // Sombra sutil
+  position: relative;
+  z-index: 1000;             // Asegura que quede por encima de otros elementos
+}
+
+.logo-container {
+  // Contenedor por si quieres agregar más cosas al header luego
+  display: flex;
+  align-items: center;
+}
+
+.app-logo {
+  height: 50px;       // Altura fija para mantener consistencia
+  width: auto;        // El ancho se ajusta automáticamente
+  max-width: 100%;    // Para que no se salga en pantallas muy pequeñas
+  object-fit: contain;
+  display: block;
+  cursor: pointer;    // Opcional: si quieres que al hacer clic vaya al inicio
+}
+
+// Ajuste responsive para móviles si el logo es muy grande
+@media (max-width: 600px) {
+  .app-logo {
+    height: 40px;
+  }
+}

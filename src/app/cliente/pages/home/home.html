@@ -1,7 +1,7 @@
 <section>
   <h2>Populares</h2>
   <div class="grid">
-    @if (populares$ | async; as populares) { @for (item of populares; track
+    @if (mejoresPrecios$ | async; as populares) { @for (item of populares; track
     item.id) {
     <app-simple-card
       [title]="item.nombre"
@@ -19,20 +19,42 @@
 
 <section>
   <h2>Reservar de nuevo</h2>
-  <div class="row">
-    @if (reservarNuevo$ | async; as restaurantes) { @for (item of restaurantes;
-    track item.id) {
-    <app-simple-card
-      [title]="item.nombre"
-      [src]="item.imagenUrl"
-      [id]="+item.id"
-      [subtitle]="item.direccion.calle+' '+item.direccion.numero+ ', ' + item.direccion.ciudad"
-      (cardClicked)="cardClicked($event)"
-    >
-    </app-simple-card>
-    } } @else {
-    <p>Cargando...</p>
+  
+  <div class="row-container"> <!-- Contenedor para manejar el layout -->
+    
+    @if (reservarNuevo$ | async; as restaurantes) {
+      
+      <!-- CASO A: HAY RESTAURANTES PREVIOS -->
+      @if (restaurantes.length > 0) {
+        <div class="row">
+          @for (item of restaurantes; track item.id) {
+            <app-simple-card
+              [title]="item.nombre"
+              [src]="item.imagenUrl || 'assets/placeholder-food.png'"
+              [id]="+item.id"
+              [subtitle]="item.direccion.calle + ' ' + item.direccion.numero + ', ' + item.direccion.ciudad"
+              (cardClicked)="cardClicked($event)"
+            >
+            </app-simple-card>
+          }
+        </div>
+      } 
+      
+      <!-- CASO B: NO HAY RESERVAS PREVIAS -->
+      @else {
+        <div class="empty-state">
+          <p>Aún no tienes reservas anteriores.</p>
+          <small>¡Explora los populares para hacer tu primera reserva!</small>
+        </div>
+      }
+
+    } @else {
+      <!-- CASO C: CARGANDO (o error de autenticación tratado como carga) -->
+      <div class="loading-state">
+        <p>Cargando tu historial...</p>
+      </div>
     }
+    
   </div>
 </section>
 

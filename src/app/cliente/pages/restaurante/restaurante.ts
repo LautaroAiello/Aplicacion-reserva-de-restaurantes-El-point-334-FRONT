@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
 import { switchMap } from 'rxjs';
 import { RestauranteService } from '../../../core/services/restaurante.service';
 import { FormularioReserva } from '../../components/formulario-reserva/formulario-reserva'; 
-
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'; 
 // Importa los módulos de Material
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -42,11 +42,11 @@ export class ClienteRestaurantePage implements OnInit {
   private route = inject(ActivatedRoute);
   private restauranteService = inject(RestauranteService);
   private dialog = inject(MatDialog); // 💡 Inyectamos el servicio de diálogo
-
+  private sanitizer = inject(DomSanitizer);
   // Cambiamos Observable por Signal para facilitar el acceso a los datos
   public restaurante = signal<RestauranteDTO | null>(null);
   public loading = signal<boolean>(true);
-
+  public mapaUrl = signal<SafeResourceUrl | null>(null);
   public direccion: InputSignal<DireccionDTO | undefined> = input<DireccionDTO>();
   
   ngOnInit() {
@@ -58,6 +58,11 @@ export class ClienteRestaurantePage implements OnInit {
     ).subscribe({
       next: (data) => {
         this.restaurante.set(data);
+        // <--- 3. GENERAR URL DEL MAPA SI HAY COORDENADAS --->
+        if (data.direccion && data.direccion.latitud && data.direccion.longitud) {
+          const url = this.generarUrlOpenStreetMap(data.direccion.latitud, data.direccion.longitud);
+          this.mapaUrl.set(url);
+        }
         this.loading.set(false);
       },
       error: (err) => {
@@ -84,5 +89,20 @@ export class ClienteRestaurantePage implements OnInit {
         mostrarPrecios: rest.configuracion?.mostrarPrecios ?? true 
       }
     });
+  }
+
+   private generarUrlOpenStreetMap(lat: number | string, lon: number | string): SafeResourceUrl {
+    const latNum = Number(lat);
+    const lonNum = Number(lon);
+    const offset = 0.002; // Ajusta el zoom (mientras más chico, más zoom)
+
+    // Bounding Box: minLon, minLat, maxLon, maxLat
+    const bbox = `${lonNum - offset},${latNum - offset},${lonNum + offset},${latNum + offset}`;
+    
+    // URL de Embed de OSM
+    const url = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${latNum},${lonNum}`;
+    
+    // Le decimos a Angular que confiamos en esta URL
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
 }

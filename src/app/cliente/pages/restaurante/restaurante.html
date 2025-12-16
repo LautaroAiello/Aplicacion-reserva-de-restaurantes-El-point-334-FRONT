@@ -32,6 +32,24 @@
         </div>
       }
 
+      <!-- SECCIÓN DEL MAPA (NUEVO) -->
+      @if (mapaUrl()) {
+        <div class="mapa-container">
+          <iframe 
+            [src]="mapaUrl()" 
+            frameborder="0" 
+            scrolling="no" 
+            marginheight="0" 
+            marginwidth="0">
+          </iframe>
+          <small>
+            <a [href]="'https://www.openstreetmap.org/?mlat=' + rest.direccion.latitud + '&mlon=' + rest.direccion.longitud + '#map=17/' + rest.direccion.latitud + '/' + rest.direccion.longitud" target="_blank">
+              Ver mapa más grande
+            </a>
+          </small>
+        </div>
+      }
+
       <div class="info-row">
         <mat-icon>phone</mat-icon>
         <span>{{ rest.telefono || 'Sin teléfono registrado' }}</span>
