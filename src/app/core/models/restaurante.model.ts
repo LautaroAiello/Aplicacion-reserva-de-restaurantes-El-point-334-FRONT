@@ -20,6 +20,7 @@ export interface RestauranteDTO {
   configuracion?: ConfiguracionRestauranteDTO;
   esFavorito?: boolean;
   menu: Plato[];
+  cantidadReservas?: number;
 }
 
 // Define tu DTO complejo

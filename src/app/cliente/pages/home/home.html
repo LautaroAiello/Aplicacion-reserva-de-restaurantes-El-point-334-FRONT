@@ -1,30 +1,28 @@
 <section>
-  <h2>Populares</h2>
+  <h2>Novedades 🔥</h2>
   <div class="grid">
-    @if (mejoresPrecios$ | async; as populares) { @for (item of populares; track
-    item.id) {
-    <app-simple-card
-      [title]="item.nombre"
-      [src]="item.imagenUrl"
-      [id]="+item.id"
-      [subtitle]="item.direccion.calle+' '+item.direccion.numero+ ', ' + item.direccion.ciudad"
-      (cardClicked)="cardClicked($event)"
-    >
-    </app-simple-card>
-    } } @else {
-    <p>Cargando...</p>
+    @if (novedades$ | async; as nuevos) { 
+      @for (item of nuevos; track item.id) {
+        <app-simple-card
+          [title]="item.nombre"
+          [src]="item.imagenUrl"
+          [id]="+item.id"
+          [subtitle]="'Nuevo en ' + item.direccion.ciudad"
+          (cardClicked)="cardClicked($event)"
+        >
+        </app-simple-card>
+      } 
+    } @else {
+      <p>Cargando novedades...</p>
     }
   </div>
 </section>
 
 <section>
-  <h2>Reservar de nuevo</h2>
+  <h2>Reservar de nuevo ↻</h2>
   
-  <div class="row-container"> <!-- Contenedor para manejar el layout -->
-    
+  <div class="row-container">
     @if (reservarNuevo$ | async; as restaurantes) {
-      
-      <!-- CASO A: HAY RESTAURANTES PREVIOS -->
       @if (restaurantes.length > 0) {
         <div class="row">
           @for (item of restaurantes; track item.id) {
@@ -32,68 +30,44 @@
               [title]="item.nombre"
               [src]="item.imagenUrl || 'assets/placeholder-food.png'"
               [id]="+item.id"
-              [subtitle]="item.direccion.calle + ' ' + item.direccion.numero + ', ' + item.direccion.ciudad"
+              [subtitle]="'Tu visita reciente'"
               (cardClicked)="cardClicked($event)"
             >
             </app-simple-card>
           }
         </div>
-      } 
-      
-      <!-- CASO B: NO HAY RESERVAS PREVIAS -->
-      @else {
+      } @else {
         <div class="empty-state">
           <p>Aún no tienes reservas anteriores.</p>
-          <small>¡Explora los populares para hacer tu primera reserva!</small>
+          <small>¡Explora las novedades para comenzar!</small>
         </div>
       }
-
     } @else {
-      <!-- CASO C: CARGANDO (o error de autenticación tratado como carga) -->
       <div class="loading-state">
         <p>Cargando tu historial...</p>
       </div>
     }
-    
   </div>
 </section>
 
 <section>
-  <h2>Mejores puntuados</h2>
+  <h2>Más Populares 🏆</h2>
   <div class="grid">
-    @if (mejoresPuntuados$ | async; as puntuados) { @for (item of puntuados;
-    track item.id) {
-    <app-simple-card
-      [title]="item.nombre"
-      [src]="item.imagenUrl"
-      [id]="+item.id"
-      [subtitle]="item.direccion.calle +' '+item.direccion.numero+ ', ' + item.direccion.ciudad"
-      (cardClicked)="cardClicked($event)"
-    >
-    </app-simple-card>
-    } } @else {
-    <p>Cargando...</p>
+    @if (masPopulares$ | async; as populares) { 
+      @for (item of populares; track item.id) {
+        <app-simple-card
+          [title]="item.nombre"
+          [src]="item.imagenUrl"
+          [id]="+item.id"
+          
+          [subtitle]="(item.cantidadReservas || 0) + ' reservas exitosas'"
+          
+          (cardClicked)="cardClicked($event)"
+        >
+        </app-simple-card>
+      } 
+    } @else {
+      <p>Cargando populares...</p>
     }
   </div>
 </section>
-
-<!-- <section>
-  <h2>Populares</h2>
-  <div class="grid">
-    @for (item of mockCards; track $index) {
-    <app-simple-card [title]="item.title" [imgUrl]="item.imgUrl" [id]="item.id"
-      (cardClicked)="cardClicked($event)"></app-simple-card>
-    }
-  </div>
-</section>
-
-<section>
-  <h2>Reservar de nuevo</h2>
-  <div class="row">
-    @for (item of mockCards; track $index) {
-    <app-simple-card [title]="item.title" [imgUrl]="item.imgUrl" [id]="item.id"
-      (cardClicked)="cardClicked($event)"></app-simple-card>
-    }
-  </div>
-</section>
- -->

@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { SimpleCard } from '../../components/simple-card/simple-card';
 import { CommonModule } from '@angular/common';
 import { forkJoin, Observable, of } from 'rxjs';
 import { map, switchMap, catchError } from 'rxjs/operators';
+import { SimpleCard } from '../../components/simple-card/simple-card';
 import { RestauranteService } from '../../../core/services/restaurante.service';
 import { RestauranteDTO } from '../../../core/models/restaurante.model';
 import { ReservasService } from '../../../core/services/reservas.service';
@@ -23,29 +23,37 @@ export class ClienteHomePage implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  protected mejoresPrecios$!: Observable<RestauranteDTO[]>;
+  // 1. Novedades (Últimos creados)
+  protected novedades$!: Observable<RestauranteDTO[]>;
+  // 2. Historial
   protected reservarNuevo$!: Observable<RestauranteDTO[]>;
-  protected mejoresPuntuados$!: Observable<RestauranteDTO[]>;
+  // 3. Populares (Más reservas)
+  protected masPopulares$!: Observable<RestauranteDTO[]>;
 
   ngOnInit() {
-    // 1. MEJORES PRECIOS: Tomamos los primeros 10 de la lista general
-    // (Idealmente el backend debería tener un endpoint /restaurantes?sort=precio)
-    this.mejoresPrecios$ = this.restauranteService.getRestaurantes().pipe(
-      map(restaurantes => restaurantes.slice(0, 5))
+    // 1. NOVEDADES: Ordenamos por ID descendente (el ID más alto es el más nuevo)
+    this.novedades$ = this.restauranteService.getRestaurantes().pipe(
+      map(restaurantes => 
+        restaurantes
+          .sort((a, b) => Number(b.id) - Number(a.id)) // Mayor ID primero
+          .slice(0, 5) // Solo los 5 últimos
+      )
     );
 
-    // 2. MEJORES PUNTUADOS: Usamos el nuevo endpoint getPopulares
-    const userIdStr = this.authService.getUsuarioIdFromToken();
-    const userId = userIdStr ? Number(userIdStr) : undefined;
-    
-    this.mejoresPuntuados$ = this.restauranteService.getPopulares(userId);
+    // 2. MÁS POPULARES: Ordenamos por cantidadReservas descendente
+    this.masPopulares$ = this.restauranteService.getRestaurantes().pipe(
+      map(restaurantes => 
+        restaurantes
+          // Usamos || 0 por si viene null del backend
+          .sort((a, b) => (b.cantidadReservas || 0) - (a.cantidadReservas || 0)) 
+          .slice(0, 5) // Top 5
+      )
+    );
 
-    // 3. RESERVAR DE NUEVO: Historial de reservas del usuario
+    // 3. RESERVAR DE NUEVO: (Lógica original intacta)
     this.reservarNuevo$ = this.reservasService.getMisReservas().pipe(
       switchMap((reservas) => {
-        if (!reservas || reservas.length === 0) {
-          return of([]);
-        }
+        if (!reservas || reservas.length === 0) return of([]);
 
         // Ordenar por fecha (más reciente primero)
         reservas.sort((a, b) => new Date(b.fechaHora).getTime() - new Date(a.fechaHora).getTime());
@@ -60,7 +68,7 @@ export class ClienteHomePage implements OnInit {
 
         return forkJoin(peticiones);
       }),
-      catchError(() => of([])) // Si falla (ej. no logueado), retorna lista vacía
+      catchError(() => of([]))
     );
   }
 
